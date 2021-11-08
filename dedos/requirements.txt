@@ -1,0 +1,4 @@
+torch==1.8.2+cu111
+torchvision==0.9.2+cu111
+piqa
+opencv-python
