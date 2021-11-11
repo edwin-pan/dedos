@@ -179,7 +179,7 @@ class Trainer:
             # freeze all layers except the final weights and bias
             for name, param in self.netG.named_parameters():
                 if param.requires_grad:
-                    print("requires grad! ", name)
+                    param.requires_grad = False
         self.netG.cuda()
         self.adv_trainer = self._get_adversarial_trainer(self.config['model']['d_name'], netD, criterionD)
         self.model = get_model(self.config['model'])
