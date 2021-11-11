@@ -186,6 +186,7 @@ def main(config_path='config/config.yaml'):
                    ['train', 'val', 'test']}
     trainer = Trainer(config, train=dataloaders['train'], val=dataloaders['val'])
     trainer.train()
+    print("end")
 
 
 if __name__ == '__main__':
