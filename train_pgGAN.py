@@ -6,7 +6,7 @@ import torch
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 from torch.optim import Adam
-from torch.utils import tensorboard
+# from torch.utils import tensorboard
 import numpy as np
 from tqdm import tqdm
 from math import floor, ceil
@@ -16,6 +16,7 @@ import os
 from dedos.models.pg_gan.config import config
 from dedos.models.pg_gan.network import Generator, Discriminator
 from dedos.models.pg_gan.dataloader import dataloader
+from dedos.models.pg_gan.tf_recorder import tf_recorder
 # from dedos.dataloader import CustomDataset
 import dedos.models.pg_gan.utils as utils
 
@@ -83,7 +84,7 @@ class trainer:
         # tensorboard
         self.use_tb = config.use_tb
         if self.use_tb:
-            self.writer = tensorboard.SummaryWriter()
+            self.writer = tf_recorder()
         
 
     def resl_scheduler(self):

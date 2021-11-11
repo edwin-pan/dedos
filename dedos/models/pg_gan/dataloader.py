@@ -5,6 +5,7 @@
 import os
 import torch as torch
 import numpy as np
+import sys
 from io import BytesIO
 import scipy.misc
 import torchvision
@@ -18,6 +19,8 @@ from PIL import Image
 from torch.utils.data import Subset
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
+
+sys.path.append('../../../') # importing in unit tests
 from dedos.dataloader import DeDOSDataset
 
 def train_val_test_dataset(dataset, val_split=0.125, test_split=0.1):
@@ -62,3 +65,6 @@ class dataloader:
     def get_batch(self):
         dataIter = iter(self.dataloader)
         return next(dataIter)[1]#.mul(2).add(-1)         # pixel range [-1, 1], only take sharp images
+
+if __name__ == '__main__':
+    pass

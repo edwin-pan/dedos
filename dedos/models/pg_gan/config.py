@@ -1,5 +1,7 @@
-""" config.py
-"""
+# Originally from: https://github.com/nashory/pggan-pytorch
+# Adapted by: Edwin Pan (edwinpan@stanford.edu)
+# November 10th, 2021
+
 import argparse
 import time
 
