@@ -12,7 +12,8 @@ from metrics import Metrics
 class DeblurModel(nn.Module):
     def __init__(self):
         super(DeblurModel, self).__init__()
-        self.metrics = Metrics()
+        self.metrics = Metrics(device='cuda')
+
 
     def get_input(self, data):
         img = data['a']
