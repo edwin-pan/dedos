@@ -22,7 +22,8 @@ from torch.utils.data import DataLoader
 
 sys.path.append('../../../') # importing in unit tests
 from dedos.dataloader import DeDOSDataset
-
+from dedos.models.pg_gan.config import config
+ 
 def train_val_test_dataset(dataset, val_split=0.125, test_split=0.1):
     train_idx, test_idx = train_test_split(list(range(len(dataset))), test_size=test_split, random_state=1)
     train_idx, val_idx= train_test_split(train_idx, test_size=val_split, random_state=1)
@@ -39,15 +40,18 @@ class dataloader:
         self.batchsize = int(self.batch_table[pow(2,2)])        # we start from 2^2=4
         self.imsize = int(pow(2,2))
         self.num_workers = 4
-        self.preprocess = transforms.Compose([transforms.Resize(size=(self.imsize,self.imsize), interpolation=transforms.InterpolationMode.NEAREST),
-                                              transforms.ToTensor()])
+
 
     def renew(self, resl):
         print('[*] Renew dataloader configuration, load data from {}.'.format(self.root))
         
         self.batchsize = int(self.batch_table[pow(2,resl)])
         self.imsize = int(pow(2,resl))
-        
+
+        self.preprocess = transforms.Compose([transforms.CenterCrop(256),
+                                              transforms.Resize(size=(self.imsize,self.imsize), interpolation=transforms.InterpolationMode.NEAREST),
+                                              transforms.ToTensor()])
+
         self.dataset = DeDOSDataset(self.root, preprocess=self.preprocess)
         self.datasets = train_val_test_dataset(self.dataset)
         self.dataloaders = {x:DataLoader(self.datasets[x],self.batchsize, shuffle=True, num_workers=self.num_workers) for x in ['train','val', 'test']}
@@ -67,4 +71,14 @@ class dataloader:
         return next(dataIter)[1]#.mul(2).add(-1)         # pixel range [-1, 1], only take sharp images
 
 if __name__ == '__main__':
+    batchsize=2
+    num_workers=4
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    print(f"Using: {device}")
+
+    # loader = dataloader(config)
+    # loader.renew(min(floor(self.resl), self.max_resl))
+    # sample = loader.get_batch()
+    
+
     pass

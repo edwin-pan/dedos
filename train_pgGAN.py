@@ -6,18 +6,15 @@ import torch
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 from torch.optim import Adam
-# from torch.utils import tensorboard
 import numpy as np
 from tqdm import tqdm
 from math import floor, ceil
 import os
 
-# from dedos.models.pg_gan import pgGAN
 from dedos.models.pg_gan.config import config
 from dedos.models.pg_gan.network import Generator, Discriminator
 from dedos.models.pg_gan.dataloader import dataloader
 from dedos.models.pg_gan.tf_recorder import tf_recorder
-# from dedos.dataloader import CustomDataset
 import dedos.models.pg_gan.utils as utils
 
 class trainer:
@@ -25,11 +22,11 @@ class trainer:
         self.config = config
         if torch.cuda.is_available():
             self.use_cuda = True
-            torch.device('cuda')
+            device = torch.device('cuda')
             # torch.set_default_tensor_type('torch.cuda.FloatTensor')
         else:
             self.use_cuda = False
-            torch.device('cpu')
+            device = torch.device('cpu')
             torch.set_default_tensor_type('torch.FloatTensor')
 
         self.nz = config.nz
@@ -68,9 +65,9 @@ class trainer:
             self.mse = self.mse.cuda()
             torch.cuda.manual_seed(config.random_seed)
             if config.n_gpu==1:
-                self.G = torch.nn.DataParallel(self.G).cuda(device=0)
-                self.D = torch.nn.DataParallel(self.D).cuda(device=0)
-            else:
+                self.G = self.G.cuda(device)
+                self.D = self.D.cuda(device)
+            else: # Multi-GPU not supported rn
                 gpus = []
                 for i  in range(config.n_gpu):
                     gpus.append(i)

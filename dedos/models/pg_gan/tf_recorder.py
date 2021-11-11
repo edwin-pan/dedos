@@ -2,11 +2,11 @@ import torch
 import torchvision.utils as vutils
 import numpy as np
 import torchvision.models as models
-import utils as utils
 from torchvision import datasets
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 import os, sys
-import utils as utils
+
+import dedos.models.pg_gan.utils as utils
 
 
 class tf_recorder:
