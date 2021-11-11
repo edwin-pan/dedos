@@ -1,5 +1,6 @@
-""" utils.py
-"""
+# Originally from: https://github.com/nashory/pggan-pytorch
+# Adapted by: Edwin Pan (edwinpan@stanford.edu)
+# November 10th, 2021
 
 import os
 import torch
@@ -79,10 +80,10 @@ def make_summary(writer, key, value, step):
 
 
 def mkdir(path):
-    if os.name == 'nt':
-        os.system('mkdir {}'.format(path.replace('/', '\\')))
-    else:
-        os.system('mkdir -r {}'.format(path))
+    # dir, _ = os.path.split(path)
+    if os.path.isdir(path):
+        print(f"{path} already exists... dumping into it.")
+    os.makedirs(path, exist_ok=True)
 
 
 import torch

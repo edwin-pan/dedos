@@ -1,3 +1,7 @@
+# Originally from: https://github.com/nashory/pggan-pytorch
+# Adapted by: Edwin Pan (edwinpan@stanford.edu)
+# November 10th, 2021
+
 import os
 import torch as torch
 import numpy as np
@@ -14,7 +18,7 @@ from PIL import Image
 from torch.utils.data import Subset
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from ....dedos.dataloader import DeDOSDataset
+from dedos.dataloader import DeDOSDataset
 
 def train_val_test_dataset(dataset, val_split=0.125, test_split=0.1):
     train_idx, test_idx = train_test_split(list(range(len(dataset))), test_size=test_split, random_state=1)
@@ -32,7 +36,7 @@ class dataloader:
         self.batchsize = int(self.batch_table[pow(2,2)])        # we start from 2^2=4
         self.imsize = int(pow(2,2))
         self.num_workers = 4
-        self.preprocess = transforms.Compose([transforms.Resize(size=(self.imsize,self.imsize), interpolation=Image.NEAREST),
+        self.preprocess = transforms.Compose([transforms.Resize(size=(self.imsize,self.imsize), interpolation=transforms.InterpolationMode.NEAREST),
                                               transforms.ToTensor()])
 
     def renew(self, resl):
@@ -41,7 +45,7 @@ class dataloader:
         self.batchsize = int(self.batch_table[pow(2,resl)])
         self.imsize = int(pow(2,resl))
         
-        self.dataset = DeDOSDataset('../../../data/deblurGAN/', preprocess=self.preprocess)
+        self.dataset = DeDOSDataset(self.root, preprocess=self.preprocess)
         self.datasets = train_val_test_dataset(self.dataset)
         self.dataloaders = {x:DataLoader(self.datasets[x],self.batchsize, shuffle=True, num_workers=self.num_workers) for x in ['train','val', 'test']}
         self.dataloader = self.dataloaders['train']
@@ -57,4 +61,4 @@ class dataloader:
 
     def get_batch(self):
         dataIter = iter(self.dataloader)
-        return next(dataIter)[0].mul(2).add(-1)         # pixel range [-1, 1]
+        return next(dataIter)[1]#.mul(2).add(-1)         # pixel range [-1, 1], only take sharp images

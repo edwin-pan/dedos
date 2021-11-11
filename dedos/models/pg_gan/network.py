@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from torch.autograd import Variable
-from custom_layers import *
+from dedos.models.pg_gan.custom_layers import *
 import copy
 
 
@@ -32,7 +32,7 @@ def conv(layers, c_in, c_out, k_size, stride=1, pad=0, leaky=True, bn=False, wn=
 def linear(layers, c_in, c_out, sig=True, wn=False):
     layers.append(Flatten())
     if wn:      layers.append(equalized_linear(c_in, c_out))
-    else:       layers.append(Linear(c_in, c_out))
+    else:       layers.append(nn.Linear(c_in, c_out))
     if sig:     layers.append(nn.Sigmoid())
     return layers
 
@@ -54,7 +54,7 @@ def soft_copy_param(target_link, source_link, tau):
 
 def get_module_names(model):
     names = []
-    for key, val in model.state_dict().iteritems():
+    for key, val in model.state_dict().items():
         name = key.split('.')[0]
         if not name in names:
             names.append(name)
