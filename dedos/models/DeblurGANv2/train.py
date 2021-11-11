@@ -169,7 +169,6 @@ class Trainer:
         if self.config['model']['pretrained'] == True:
             weight_path = self.config['model']['weight_path']
             self.netG.load_state_dict(torch.load(weight_path)['model']);
-            import IPython; IPython.embed()
             # freeze all layers except the final weights and bias
             for name, param in self.netG.named_parameters():
                 if "final" in name or "smooth2" in name:

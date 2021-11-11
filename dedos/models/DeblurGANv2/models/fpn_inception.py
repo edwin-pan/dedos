@@ -64,7 +64,8 @@ class FPNInception(nn.Module):
 
     def forward(self, x):
         map0, map1, map2, map3, map4 = self.fpn(x)
-
+        import IPython
+        IPython.embed()
         map4 = nn.functional.upsample(self.head4(map4), scale_factor=8, mode="nearest")
         map3 = nn.functional.upsample(self.head3(map3), scale_factor=4, mode="nearest")
         map2 = nn.functional.upsample(self.head2(map2), scale_factor=2, mode="nearest")
