@@ -7,7 +7,6 @@ import numpy as np
 from models.fpn_mobilenet import FPNMobileNet
 from models.fpn_inception import FPNInception
 from models.fpn_inception_simple import FPNInceptionSimple
-from models.unet_seresnext import UNetSEResNext
 from models.fpn_densenet import FPNDense
 ###############################################################################
 # Functions
@@ -283,9 +282,6 @@ def get_generator(model_config):
         model_g = FPNInceptionSimple(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']))
     elif generator_name == 'fpn_dense':
         model_g = FPNDense()
-    elif generator_name == 'unet_seresnext':
-        model_g = UNetSEResNext(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']),
-                                pretrained=model_config['pretrained'])
     else:
         raise ValueError("Generator Network [%s] not recognized." % generator_name)
 
