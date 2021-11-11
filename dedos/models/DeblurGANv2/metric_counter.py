@@ -14,6 +14,7 @@ class MetricCounter:
         self.metrics = defaultdict(list)
         self.images = defaultdict(list)
         self.best_metric = 0
+        self.metric_dict = defaultdict(list)
 
     def add_image(self, x: np.ndarray, tag: str):
         self.images[tag].append(x)
@@ -35,6 +36,15 @@ class MetricCounter:
     def loss_message(self):
         metrics = ((k, np.mean(self.metrics[k][-WINDOW_SIZE:])) for k in ('G_loss', 'PSNR', 'SSIM'))
         return '; '.join(map(lambda x: f'{x[0]}={x[1]:.4f}', metrics))
+
+    def write_to_dict(self, epoch, val=False):
+        for key, value in self.metrics.items():
+            self.metric_dict[key].append(np.mean(value))
+
+        if val:
+            np.save("/scratch/users/avento/dedos_vals/dedos_metrics/metrics_val.npy", self.metric_dict)
+        else:
+            np.save("/scratch/users/avento/dedos_vals/dedos_metrics/metrics_train.npy", self.metric_dict)
 
     # def write_to_tensorboard(self, epoch_num, validation=False):
     #    scalar_prefix = 'Validation' if validation else 'Train'

@@ -36,6 +36,7 @@ class Trainer:
         self.metric_counter = MetricCounter(config['experiment_desc'])
         self.warmup_epochs = config['warmup_num']
 
+
     def train(self):
         self._init_params()
         for epoch in range(0, self.config['num_epochs']):
@@ -57,10 +58,10 @@ class Trainer:
 
             if self.metric_counter.update_best_model():
                 torch.save({
-                    '/scratch/users/avento/dedos_weights': self.netG.state_dict()
+                    '/scratch/users/avento/dedos_val/dedos_weights': self.netG.state_dict()
                 }, 'best_{}.h5'.format(self.config['experiment_desc']))
             torch.save({
-                '/scratch/users/avento/dedos_weights': self.netG.state_dict()
+                '/scratch/users/avento/dedos_val/dedos_weights': self.netG.state_dict()
             }, 'last_{}.h5'.format(self.config['experiment_desc']))
             print(self.metric_counter.loss_message())
             logging.debug("Experiment Name: %s, Epoch: %d, Loss: %s" % (
