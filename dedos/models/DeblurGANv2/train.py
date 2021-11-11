@@ -58,11 +58,11 @@ class Trainer:
 
             if self.metric_counter.update_best_model():
                 torch.save({
-                    '/scratch/users/avento/dedos_vals/dedos_weights': self.netG.state_dict()
-                }, 'best_{}.h5'.format(self.config['experiment_desc']))
+                    'model': self.netG.state_dict()
+                }, '/scratch/users/avento/dedos_vals/dedos_weights/best_{}.h5'.format(self.config['experiment_desc']))
             torch.save({
-                '/scratch/users/avento/dedos_vals/dedos_weights': self.netG.state_dict()
-            }, 'last_{}.h5'.format(self.config['experiment_desc']))
+                'model': self.netG.state_dict()
+            }, '/scratch/users/avento/dedos_vals/dedos_weights/last_{}.h5'.format(self.config['experiment_desc']))
             print(self.metric_counter.loss_message())
             logging.debug("Experiment Name: %s, Epoch: %d, Loss: %s" % (
                 self.config['experiment_desc'], epoch, self.metric_counter.loss_message()))
