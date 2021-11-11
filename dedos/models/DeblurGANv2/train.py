@@ -44,6 +44,8 @@ class Trainer:
             for name, param in self.netG.named_parameters():
                 if "final" in name or "smooth2" in name:
                     param.requires_grad = True
+                else:
+                    param.requires_grad = False
             self.optimizer_G = self._get_optim(self.netG.parameters())
             self.scheduler_G = self._get_scheduler(self.optimizer_G)
 
@@ -177,9 +179,9 @@ class Trainer:
             weight_path = self.config['model']['weight_path']
             self.netG.load_state_dict(torch.load(weight_path)['model']);
             # freeze all layers except the final weights and bias
-            for name, param in self.netG.named_parameters():
-                if param.requires_grad:
-                    param.requires_grad = False
+            # for name, param in self.netG.named_parameters():
+            #     if param.requires_grad:
+            #         param.requires_grad = False
         self.netG.cuda()
         self.adv_trainer = self._get_adversarial_trainer(self.config['model']['d_name'], netD, criterionD)
         self.model = get_model(self.config['model'])
