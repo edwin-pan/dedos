@@ -1,6 +1,10 @@
 import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
+from torch.utils.data import Subset
+from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader
+
 import matplotlib.pyplot as plt
 import os.path as osp
 import os
@@ -9,9 +13,18 @@ import glob
 
 from metrics import Metrics
 
-class CustomDataset(Dataset):
+def train_val_test_dataset(dataset, val_split=0.125, test_split=0.1):
+    train_idx, test_idx = train_test_split(list(range(len(dataset))), test_size=test_split, random_state=1)
+    train_idx, val_idx= train_test_split(train_idx, test_size=val_split, random_state=1)
+    datasets = {}
+    datasets['train'] = Subset(dataset, train_idx)
+    datasets['val'] = Subset(dataset, val_idx)
+    datasets['test'] = Subset(dataset, test_idx)
+    return datasets
+    
+class DeDOSDataset(Dataset):
     'Characterizes a dataset for PyTorch'
-    def __init__(self, datapath, augment=False):
+    def __init__(self, datapath, augment=False, preprocess=None):
         'Initialization'
         # Paths
         self.datapath = datapath
@@ -23,7 +36,10 @@ class CustomDataset(Dataset):
         
         # Utils
         self.image_size = (432, 368, 3)
-        self.preprocess = transforms.Compose([transforms.ToTensor()]) # [C, H, W]
+        if preprocess==None:
+            self.preprocess = transforms.Compose([transforms.ToTensor()]) # [C, H, W]
+        else:
+            self.preprocess = preprocess
         self.augmentation = transforms.Compose([transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])]) # Z-Score Norm Using Imagenet
         
         # Grab images
@@ -31,8 +47,8 @@ class CustomDataset(Dataset):
         return
       
     def init_image_paths(self):
-        self.e_images = glob.glob(osp.join(self.datapath_e, '*.jpg'))
-        self.s_images = glob.glob(osp.join(self.datapath_s, '*.jpg'))
+        self.e_images = sorted(glob.glob(osp.join(self.datapath_e, '*.jpg')))
+        self.s_images = sorted(glob.glob(osp.join(self.datapath_s, '*.jpg')))
         self.num_e_images = len(self.e_images)
         self.num_s_images = len(self.s_images)
         
@@ -64,9 +80,14 @@ class CustomDataset(Dataset):
         return encoded, sharp
 
 if __name__ == '__main__':
-    dataset = CustomDataset('../../../data/deblurGAN/')
-    dl = torch.utils.data.DataLoader(dataset, batch_size=2)
-    
+    batchsize=2
+    num_workers=4
+    dataset = DeDOSDataset('../../../data/deblurGAN/')
+    datasets = train_val_test_dataset(dataset)
+    dataloaders = {x:DataLoader(datasets[x],batchsize, shuffle=True, num_workers=num_workers) for x in ['train','val','test']}
+
+    dl = dataloaders['train']
+
     metrics = Metrics(device='cpu')
 
     sample = next(iter(dl))
