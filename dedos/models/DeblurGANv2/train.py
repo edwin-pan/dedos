@@ -1,6 +1,7 @@
 import logging
 import os
 from functools import partial
+import IPython
 
 import cv2
 import torch
@@ -48,10 +49,10 @@ class Trainer:
 
             if self.metric_counter.update_best_model():
                 torch.save({
-                    'model': self.netG.state_dict()
+                    './checkpoints/model': self.netG.state_dict()
                 }, 'best_{}.h5'.format(self.config['experiment_desc']))
             torch.save({
-                'model': self.netG.state_dict()
+                './checkpoints/model': self.netG.state_dict()
             }, 'last_{}.h5'.format(self.config['experiment_desc']))
             print(self.metric_counter.loss_message())
             logging.debug("Experiment Name: %s, Epoch: %d, Loss: %s" % (
@@ -164,6 +165,13 @@ class Trainer:
     def _init_params(self):
         self.criterionG, criterionD = get_loss(self.config['model'])
         self.netG, netD = get_nets(self.config['model'])
+        # load pretrained weights
+        if self.config['model']['pretrained'] == True:
+            weight_path = self.config['model']['weight_path']
+            self.netG.load_state_dict(torch.load(weight_path)['model'])
+            # freeze all layers except the final weights and bias
+            for param in self.netG.parameters()[:-2]:
+                param.requires_grad = False
         self.netG.cuda()
         self.adv_trainer = self._get_adversarial_trainer(self.config['model']['d_name'], netD, criterionD)
         self.model = get_model(self.config['model'])
@@ -184,9 +192,10 @@ def main(config_path='config/config.yaml'):
     datasets = train_val_test_dataset(dataset)
     dataloaders = {x: DataLoader(datasets[x], batchsize, shuffle=True, num_workers=cpu_count()) for x in
                    ['train', 'val', 'test']}
+    # set up trainer
     trainer = Trainer(config, train=dataloaders['train'], val=dataloaders['val'])
     trainer.train()
-    print("end")
+    print("===== End of Program =====")
 
 
 if __name__ == '__main__':

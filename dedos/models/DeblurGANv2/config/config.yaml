@@ -42,6 +42,8 @@ phase: train
 warmup_num: 3
 model:
   g_name: fpn_inception
+  pretrained: True
+  weight_path: /weights/fpn_inception.h5
   blocks: 9
   d_name: double_gan # may be no_gan, patch_gan, double_gan, multi_scale
   d_layers: 3
@@ -55,8 +57,7 @@ model:
 num_epochs: 200
 train_batches_per_epoch: 1000
 val_batches_per_epoch: 100
-batch_size: 1
-image_size: [256, 256]
+batch_size: 64
 
 optimizer:
   name: adam
