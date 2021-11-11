@@ -39,10 +39,15 @@ class Trainer:
     def train(self):
         self._init_params()
         for epoch in range(0, self.config['num_epochs']):
-            if (epoch == self.warmup_epochs) and not (self.warmup_epochs == 0):
-                self.netG.module.unfreeze()
-                self.optimizer_G = self._get_optim(self.netG.parameters())
-                self.scheduler_G = self._get_scheduler(self.optimizer_G)
+            # if (epoch == self.warmup_epochs) and not (self.warmup_epochs == 0):
+                # self.netG.module.unfreeze()
+            for name, param in self.netG.named_parameters():
+                if "final" in name or "smooth2" in name:
+                    param.requires_grad = True
+            self.optimizer_G = self._get_optim(self.netG.parameters())
+            self.scheduler_G = self._get_scheduler(self.optimizer_G)
+
+
             self._run_epoch(epoch)
             self._validate(epoch)
             self.scheduler_G.step()
@@ -50,10 +55,10 @@ class Trainer:
 
             if self.metric_counter.update_best_model():
                 torch.save({
-                    './checkpoints/model': self.netG.state_dict()
+                    '/scratch/users/avento/dedos_weights': self.netG.state_dict()
                 }, 'best_{}.h5'.format(self.config['experiment_desc']))
             torch.save({
-                './checkpoints/model': self.netG.state_dict()
+                '/scratch/users/avento/dedos_weights': self.netG.state_dict()
             }, 'last_{}.h5'.format(self.config['experiment_desc']))
             print(self.metric_counter.loss_message())
             logging.debug("Experiment Name: %s, Epoch: %d, Loss: %s" % (
@@ -89,7 +94,7 @@ class Trainer:
             if i > epoch_size:
                 break
         tq.close()
-        self.metric_counter.write_to_tensorboard(epoch)
+        # self.metric_counter.write_to_tensorboard(epoch)
 
     def _validate(self, epoch):
         self.metric_counter.clear()
@@ -113,7 +118,7 @@ class Trainer:
             if i > epoch_size:
                 break
         tq.close()
-        self.metric_counter.write_to_tensorboard(epoch, validation=True)
+        # self.metric_counter.write_to_tensorboard(epoch, validation=True)
 
     def _update_d(self, outputs, targets):
         if self.config['model']['d_name'] == 'no_gan':
@@ -173,9 +178,8 @@ class Trainer:
             self.netG.load_state_dict(torch.load(weight_path)['model']);
             # freeze all layers except the final weights and bias
             for name, param in self.netG.named_parameters():
-                if "final" in name or "smooth2" in name:
-                    print(name)
-                    param.requires_grad = False
+                if param.requires_grad:
+                    print("requires grad! ", name)
         self.netG.cuda()
         self.adv_trainer = self._get_adversarial_trainer(self.config['model']['d_name'], netD, criterionD)
         self.model = get_model(self.config['model'])

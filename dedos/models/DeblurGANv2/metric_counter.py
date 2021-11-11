@@ -28,8 +28,8 @@ class MetricCounter:
             self.metrics[name].append(value)
 
     def add_metrics(self, psnr, ssim, lpips):
-        for name, value in zip(('PSNR', 'SSIM'),
-                               (psnr, ssim)):
+        for name, value in zip(('PSNR', 'SSIM', 'LPIPS'),
+                               (psnr, ssim, lpips)):
             self.metrics[name].append(value)
 
     def loss_message(self):
