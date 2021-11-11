@@ -50,7 +50,7 @@ class Trainer:
             self.scheduler_G = self._get_scheduler(self.optimizer_G)
 
 
-            self._run_epoch(epoch)
+            # self._run_epoch(epoch) !!!!!!
             self._validate(epoch)
             self.scheduler_G.step()
             self.scheduler_D.step()
@@ -105,7 +105,8 @@ class Trainer:
         tq.set_description('Validation')
         i = 0
         for data in tq:
-            inputs, targets = self.model.get_input(data)
+            inputs, targets = next(iter(self.val_dataset))
+            inputs, targets = inputs.cuda(), targets.cuda()
             with torch.no_grad():
                 outputs = self.netG(inputs)
                 loss_content = self.criterionG(outputs, targets)
