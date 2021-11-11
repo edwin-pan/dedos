@@ -2,7 +2,11 @@ import numpy as np
 import torch.nn as nn
 from skimage.metrics import structural_similarity as SSIM
 from util.metrics import PSNR
-from ....metrics import Metrics
+import sys
+import os
+sys.path.append('/home/users/avento/dedos/dedos')
+print(os.getcwd())
+from metrics import Metrics
 
 
 class DeblurModel(nn.Module):

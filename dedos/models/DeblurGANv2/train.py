@@ -12,7 +12,6 @@ from joblib import cpu_count
 from torch.utils.data import DataLoader
 
 from adversarial_trainer import GANFactory
-from dataset import PairedDataset
 from metric_counter import MetricCounter
 from models.losses import get_loss
 from models.models import get_model
@@ -20,8 +19,9 @@ from models.networks import get_nets
 from schedulers import LinearDecay, WarmRestart
 from fire import Fire
 
-
-from ..dataloader import DeDOSDataset, train_val_test_dataset
+import sys
+sys.path.append('/home/users/avento/dedos/dedos')
+from dataloader import DeDOSDataset, train_val_test_dataset
 
 cv2.setNumThreads(0)
 
@@ -168,10 +168,10 @@ class Trainer:
         # load pretrained weights
         if self.config['model']['pretrained'] == True:
             weight_path = self.config['model']['weight_path']
-            self.netG.load_state_dict(torch.load(weight_path)['model'])
+            self.netG.load_state_dict(torch.load(weight_path)['model']); import IPython; IPython.embed()
             # freeze all layers except the final weights and bias
-            for param in self.netG.parameters()[:-2]:
-                param.requires_grad = False
+	    #for param in self.netG.parameters()[:-2]:
+            #    param.requires_grad = False
         self.netG.cuda()
         self.adv_trainer = self._get_adversarial_trainer(self.config['model']['d_name'], netD, criterionD)
         self.model = get_model(self.config['model'])
@@ -188,7 +188,7 @@ def main(config_path='config/config.yaml'):
 
     # train, val, test dataloader
     batchsize = config.pop('batch_size')
-    dataset = DeDOSDataset('../../../deblueGAN')
+    dataset = DeDOSDataset('/scratch/groups/kpohl/dedos/deblurGAN')
     datasets = train_val_test_dataset(dataset)
     dataloaders = {x: DataLoader(datasets[x], batchsize, shuffle=True, num_workers=cpu_count()) for x in
                    ['train', 'val', 'test']}
