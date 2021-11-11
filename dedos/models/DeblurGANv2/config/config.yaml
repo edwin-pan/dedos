@@ -57,7 +57,8 @@ model:
 num_epochs: 200
 train_batches_per_epoch: 1000
 val_batches_per_epoch: 100
-batch_size: 64
+batch_size: 1
+image_size: [256, 256]
 
 optimizer:
   name: adam

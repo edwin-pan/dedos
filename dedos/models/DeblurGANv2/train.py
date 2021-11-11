@@ -10,6 +10,7 @@ import tqdm
 import yaml
 from joblib import cpu_count
 from torch.utils.data import DataLoader
+from torchvision import transforms
 
 from adversarial_trainer import GANFactory
 from metric_counter import MetricCounter
@@ -190,7 +191,8 @@ def main(config_path='config/config.yaml'):
 
     # train, val, test dataloader
     batchsize = config.pop('batch_size')
-    dataset = DeDOSDataset('/scratch/groups/kpohl/dedos/deblurGAN')
+    preprocess = transforms.Compose(transforms.ToTensor(), transforms.CenterCrop(256))
+    dataset = DeDOSDataset('/scratch/groups/kpohl/dedos/deblurGAN', preprocess=preprocess)
     datasets = train_val_test_dataset(dataset)
     dataloaders = {x: DataLoader(datasets[x], batchsize, shuffle=True, num_workers=cpu_count()) for x in
                    ['train', 'val', 'test']}
