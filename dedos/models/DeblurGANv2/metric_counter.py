@@ -27,7 +27,7 @@ class MetricCounter:
                                (l_G, l_content, l_G - l_content, l_D)):
             self.metrics[name].append(value)
 
-    def add_metrics(self, psnr, ssim):
+    def add_metrics(self, psnr, ssim, lpips):
         for name, value in zip(('PSNR', 'SSIM'),
                                (psnr, ssim)):
             self.metrics[name].append(value)

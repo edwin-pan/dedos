@@ -70,6 +70,7 @@ class Trainer:
         i = 0
         for data in tq:
             inputs, targets = next(iter(self.train_dataset))
+            inputs, targets = inputs.cuda(), targets.cuda()
             outputs = self.netG(inputs)
             loss_D = self._update_d(outputs, targets)
             self.optimizer_G.zero_grad()
@@ -191,7 +192,7 @@ def main(config_path='config/config.yaml'):
 
     # train, val, test dataloader
     batchsize = config.pop('batch_size')
-    preprocess = transforms.Compose(transforms.ToTensor(), transforms.CenterCrop(256))
+    preprocess = transforms.Compose([transforms.ToTensor(), transforms.CenterCrop(256)])
     dataset = DeDOSDataset('/scratch/groups/kpohl/dedos/deblurGAN', preprocess=preprocess)
     datasets = train_val_test_dataset(dataset)
     dataloaders = {x: DataLoader(datasets[x], batchsize, shuffle=True, num_workers=cpu_count()) for x in
