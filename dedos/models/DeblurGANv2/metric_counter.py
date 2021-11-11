@@ -37,7 +37,7 @@ class MetricCounter:
         metrics = ((k, np.mean(self.metrics[k][-WINDOW_SIZE:])) for k in ('G_loss', 'PSNR', 'SSIM'))
         return '; '.join(map(lambda x: f'{x[0]}={x[1]:.4f}', metrics))
 
-    def write_to_dict(self, epoch, val=False):
+    def write_to_dict(self, val=False):
         for key, value in self.metrics.items():
             self.metric_dict[key].append(np.mean(value))
 
