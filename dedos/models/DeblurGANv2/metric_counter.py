@@ -37,14 +37,16 @@ class MetricCounter:
         metrics = ((k, np.mean(self.metrics[k][-WINDOW_SIZE:])) for k in ('G_loss', 'PSNR', 'SSIM'))
         return '; '.join(map(lambda x: f'{x[0]}={x[1]:.4f}', metrics))
 
-    def write_to_dict(self, val=False):
+    def write_to_dict(self, epoch, val=False):
         for key, value in self.metrics.items():
             self.metric_dict[key].append(np.mean(value))
 
         if val:
             np.save("/scratch/users/avento/dedos_vals/dedos_metrics/metrics_val.npy", self.metric_dict)
+            np.save(f"/scratch/users/avento/dedos_vals/dedos_metrics/image_val{epoch}.npy", self.images)
         else:
             np.save("/scratch/users/avento/dedos_vals/dedos_metrics/metrics_train.npy", self.metric_dict)
+            np.save(f"/scratch/users/avento/dedos_vals/dedos_metrics/image_train{epoch}.npy", self.images)
 
     # def write_to_tensorboard(self, epoch_num, validation=False):
     #    scalar_prefix = 'Validation' if validation else 'Train'

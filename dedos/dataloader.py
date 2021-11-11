@@ -4,11 +4,13 @@ from torchvision import transforms
 from torch.utils.data import Subset
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
+from PIL import Image
+
 
 import matplotlib.pyplot as plt
 import os.path as osp
-import os
 import cv2
+import os
 import glob
 
 from metrics import Metrics
@@ -66,9 +68,9 @@ class DeDOSDataset(Dataset):
         # Get encoded and sharp image
         encoded = self.e_images[index] # blurry now has path to chosen blurry image
         sharp = self.s_images[index] # sharp now has path to chosen sharp image
-        
-        encoded = cv2.cvtColor(cv2.imread(encoded), cv2.COLOR_BGR2RGB)
-        sharp = cv2.cvtColor(cv2.imread(sharp), cv2.COLOR_BGR2RGB)
+
+        encoded = Image.open(encoded)
+        sharp = Image.open(sharp)
         
         encoded = self.preprocess(encoded)
         sharp = self.preprocess(sharp)

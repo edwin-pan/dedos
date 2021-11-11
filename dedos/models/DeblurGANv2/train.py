@@ -91,13 +91,13 @@ class Trainer:
             curr_psnr, curr_ssim, curr_lpips, img_for_vis = self.model.get_images_and_metrics(inputs, outputs, targets)
             self.metric_counter.add_metrics(curr_psnr, curr_ssim, curr_lpips)
             tq.set_postfix(loss=self.metric_counter.loss_message())
-            if not i:
+            if i % 50 == 0:
                 self.metric_counter.add_image(img_for_vis, tag='train')
             i += 1
             if i > epoch_size:
                 break
         tq.close()
-        self.metric_counter.write_to_dict(val=False)
+        self.metric_counter.write_to_dict(epoch, val=False)
         # self.metric_counter.write_to_tensorboard(epoch)
 
     def _validate(self, epoch):
@@ -117,13 +117,13 @@ class Trainer:
             self.metric_counter.add_losses(loss_G.item(), loss_content.item())
             curr_psnr, curr_ssim, curr_lpips, img_for_vis = self.model.get_images_and_metrics(inputs, outputs, targets)
             self.metric_counter.add_metrics(curr_psnr, curr_ssim, curr_lpips)
-            if not i:
+            if i % 20 == 0:
                 self.metric_counter.add_image(img_for_vis, tag='val')
             i += 1
             if i > epoch_size:
                 break
         tq.close()
-        self.metric_counter.write_to_dict(val=True)
+        self.metric_counter.write_to_dict(epoch, val=True)
         # self.metric_counter.write_to_tensorboard(epoch, validation=True)
 
     def _update_d(self, outputs, targets):
