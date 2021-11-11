@@ -7,6 +7,7 @@ import os
 sys.path.append('/home/users/avento/dedos/dedos')
 print(os.getcwd())
 from metrics import Metrics
+import torch
 
 
 class DeblurModel(nn.Module):
@@ -33,7 +34,7 @@ class DeblurModel(nn.Module):
         real = self.tensor2im(target.data)
         psnr = PSNR(fake, real)
         ssim = SSIM(fake, real, multichannel=True)
-        lpips = self.metrics(output.data.cuda(), target.data.cuda())[2].item()
+        lpips = self.metrics(torch.clip(output.data.cuda(),0,1), target.data.cuda())[2].item()
         vis_img = np.hstack((inp, fake, real))
         return psnr, ssim, lpips, vis_img
 
