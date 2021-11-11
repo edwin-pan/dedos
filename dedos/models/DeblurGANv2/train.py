@@ -168,10 +168,13 @@ class Trainer:
         # load pretrained weights
         if self.config['model']['pretrained'] == True:
             weight_path = self.config['model']['weight_path']
-            self.netG.load_state_dict(torch.load(weight_path)['model']); import IPython; IPython.embed()
+            self.netG.load_state_dict(torch.load(weight_path)['model']);
+            import IPython; IPython.embed()
             # freeze all layers except the final weights and bias
-	    #for param in self.netG.parameters()[:-2]:
-            #    param.requires_grad = False
+            for name, param in self.netG.named_parameters():
+                if "final" in name or "smooth2" in name:
+                    print(name)
+                    param.requires_grad = False
         self.netG.cuda()
         self.adv_trainer = self._get_adversarial_trainer(self.config['model']['d_name'], netD, criterionD)
         self.model = get_model(self.config['model'])
