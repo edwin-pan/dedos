@@ -51,17 +51,17 @@ class Trainer:
             self.scheduler_G = self._get_scheduler(self.optimizer_G)
 
 
-            # self._run_epoch(epoch) !!!!!!
+            #self._run_epoch(epoch) !!!!!!
             self._validate(epoch)
             self.scheduler_G.step()
             self.scheduler_D.step()
 
             if self.metric_counter.update_best_model():
                 torch.save({
-                    '/scratch/users/avento/dedos_val/dedos_weights': self.netG.state_dict()
+                    '/scratch/users/avento/dedos_vals/dedos_weights': self.netG.state_dict()
                 }, 'best_{}.h5'.format(self.config['experiment_desc']))
             torch.save({
-                '/scratch/users/avento/dedos_val/dedos_weights': self.netG.state_dict()
+                '/scratch/users/avento/dedos_vals/dedos_weights': self.netG.state_dict()
             }, 'last_{}.h5'.format(self.config['experiment_desc']))
             print(self.metric_counter.loss_message())
             logging.debug("Experiment Name: %s, Epoch: %d, Loss: %s" % (
