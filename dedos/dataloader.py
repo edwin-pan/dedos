@@ -82,7 +82,7 @@ class DeDOSDataset(Dataset):
 if __name__ == '__main__':
     batchsize=2
     num_workers=4
-    dataset = DeDOSDataset('../../../data/deblurGAN/')
+    dataset = DeDOSDataset('/scratch/groups/kpohl/dedos/deblurGAN')
     datasets = train_val_test_dataset(dataset)
     dataloaders = {x:DataLoader(datasets[x],batchsize, shuffle=True, num_workers=num_workers) for x in ['train','val','test']}
 
