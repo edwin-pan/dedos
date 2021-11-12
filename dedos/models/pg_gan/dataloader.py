@@ -52,9 +52,10 @@ class dataloader:
                                               transforms.Resize(size=(self.imsize,self.imsize), interpolation=transforms.InterpolationMode.NEAREST),
                                               transforms.ToTensor()])
 
-        self.dataset = DeDOSDataset(self.root, preprocess=self.preprocess)
-        self.datasets = train_val_test_dataset(self.dataset)
+        self.combined_dataset = DeDOSDataset(self.root, preprocess=self.preprocess)
+        self.datasets = train_val_test_dataset(self.combined_dataset)
         self.dataloaders = {x:DataLoader(self.datasets[x],self.batchsize, shuffle=True, num_workers=self.num_workers) for x in ['train','val', 'test']}
+        self.dataset = self.datasets['train']
         self.dataloader = self.dataloaders['train']
 
     def __iter__(self):
@@ -64,11 +65,11 @@ class dataloader:
         return next(self.dataloader)
 
     def __len__(self):
-        return len(self.dataloader.dataset)
+        return len(self.dataloader)
 
     def get_batch(self):
         dataIter = iter(self.dataloader)
-        return next(dataIter)[1]#.mul(2).add(-1)         # pixel range [-1, 1], only take sharp images
+        return next(dataIter)[1].mul(2).add(-1)         # pixel range [-1, 1], only take sharp images
 
 if __name__ == '__main__':
     batchsize=2
