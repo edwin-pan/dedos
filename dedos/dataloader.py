@@ -4,6 +4,7 @@ from torchvision import transforms
 from torch.utils.data import Subset
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
+
 import torchvision.transforms as transforms
 from PIL import Image
 
@@ -85,6 +86,7 @@ class DeDOSDataset(Dataset):
 if __name__ == '__main__':
     batchsize=2
     num_workers=4
+
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     print(f"Using: {device}")
 
