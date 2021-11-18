@@ -8,3 +8,4 @@ opencv-python
 matplotlib
 tensorboard==2.6.0
 tqdm
+poppy
