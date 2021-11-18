@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from models.mobilenet_v2 import MobileNetV2
+from dedos.models.DeblurGANv2.models.mobilenet_v2 import MobileNetV2
 
 class FPNHead(nn.Module):
     def __init__(self, num_in, num_mid, num_out):

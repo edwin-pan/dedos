@@ -4,8 +4,7 @@ import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
 from torch.autograd import Variable
-
-from util.image_pool import ImagePool
+from dedos.models.DeblurGANv2.util.image_pool import ImagePool
 
 
 ###############################################################################

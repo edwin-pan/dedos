@@ -1,12 +1,10 @@
 import numpy as np
 import torch.nn as nn
 from skimage.metrics import structural_similarity as SSIM
-from util.metrics import PSNR
+from dedos.models.DeblurGANv2.util.metrics import PSNR
 import sys
 import os
-sys.path.append('/home/users/avento/dedos/dedos')
-print(os.getcwd())
-from metrics import Metrics
+from dedos.metrics import Metrics
 import torch
 
 

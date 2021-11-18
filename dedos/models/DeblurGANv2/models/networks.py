@@ -4,10 +4,10 @@ from torch.nn import init
 import functools
 from torch.autograd import Variable
 import numpy as np
-from models.fpn_mobilenet import FPNMobileNet
-from models.fpn_inception import FPNInception
-from models.fpn_inception_simple import FPNInceptionSimple
-from models.fpn_densenet import FPNDense
+from dedos.models.DeblurGANv2.models.fpn_mobilenet import FPNMobileNet
+from dedos.models.DeblurGANv2.models.fpn_inception import FPNInception
+from dedos.models.DeblurGANv2.models.fpn_inception_simple import FPNInceptionSimple
+from dedos.models.DeblurGANv2.models.fpn_densenet import FPNDense
 ###############################################################################
 # Functions
 ###############################################################################
@@ -277,7 +277,7 @@ def get_generator(model_config):
     elif generator_name == 'fpn_mobilenet':
         model_g = FPNMobileNet(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']))
     elif generator_name == 'fpn_inception':
-        model_g = FPNInception(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']))
+        model_g = FPNInception(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']),add_noise=model_config['add_noise'])
     elif generator_name == 'fpn_inception_simple':
         model_g = FPNInceptionSimple(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']))
     elif generator_name == 'fpn_dense':

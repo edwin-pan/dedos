@@ -13,7 +13,7 @@ import cv2
 import os
 import glob
 
-from metrics import Metrics
+from dedos.metrics import Metrics
 
 def train_val_test_dataset(dataset, val_split=0.125, test_split=0.1):
     train_idx, test_idx = train_test_split(list(range(len(dataset))), test_size=test_split, random_state=1)
