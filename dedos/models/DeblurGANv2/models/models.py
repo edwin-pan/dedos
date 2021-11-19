@@ -5,6 +5,7 @@ from dedos.models.DeblurGANv2.util.metrics import PSNR
 import sys
 import os
 from dedos.metrics import Metrics
+
 import torch
 
 
@@ -33,6 +34,7 @@ class DeblurModel(nn.Module):
         psnr = PSNR(fake, real)
         ssim = SSIM(fake, real, multichannel=True)
         lpips = self.metrics(((output.data+1)/2).cuda(), ((target.data+1)/2).cuda())[2].item()
+
         vis_img = np.hstack((inp, fake, real))
         return psnr, ssim, lpips, vis_img
 

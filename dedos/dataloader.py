@@ -4,14 +4,20 @@ from torchvision import transforms
 from torch.utils.data import Subset
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from PIL import Image
 
+import torchvision.transforms as transforms
+from PIL import Image
 
 import matplotlib.pyplot as plt
 import os.path as osp
 import cv2
+
 import os
 import glob
+import sys
+
+
+sys.path.append('../') # importing in unit tests
 
 from dedos.metrics import Metrics
 
@@ -88,22 +94,28 @@ class DeDOSDataset(Dataset):
 if __name__ == '__main__':
     batchsize=2
     num_workers=4
-    dataset = DeDOSDataset('/scratch/groups/kpohl/dedos/deblurGAN')
+
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    print(f"Using: {device}")
+
+    preprocess = transforms.Compose([transforms.Resize(size=(256,256), interpolation=transforms.InterpolationMode.NEAREST), # Using bilinear interpolation
+                                     transforms.ToTensor()])
+
+    dataset = DeDOSDataset('../../../data/deblurGAN/', preprocess=preprocess)
     datasets = train_val_test_dataset(dataset)
     dataloaders = {x:DataLoader(datasets[x],batchsize, shuffle=True, num_workers=num_workers) for x in ['train','val','test']}
-
     dl = dataloaders['train']
+    metrics = Metrics(device=device)
 
-    metrics = Metrics(device='cpu')
-
-    sample = next(iter(dl))
-
-    out = metrics(sample[1],sample[0])
+    blurry, sharp = next(iter(dl))
+    blurry = blurry.to(device)
+    sharp = sharp.to(device)
+    out = metrics(blurry,sharp)
 
     print(out)
-    print(sample[0].shape)
-    plt.imshow(sample[0][0].permute(1,2,0))
+    print(blurry.shape)
+    plt.imshow(blurry[0].cpu().permute(1,2,0))
     plt.savefig('./blur.png')
-    plt.imshow(sample[1][0].permute(1,2,0))
+    plt.imshow(sharp[0].cpu().permute(1,2,0))
     plt.savefig('./sharp.png')
 

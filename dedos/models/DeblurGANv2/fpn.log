@@ -88,3 +88,4 @@ DEBUG:asyncio:Using selector: EpollSelector
 DEBUG:root:Experiment Name: fpn, Epoch: 0, Loss: G_loss=0.2113; PSNR=20.0164; SSIM=0.5248
 DEBUG:root:Experiment Name: fpn, Epoch: 0, Loss: G_loss=0.2581; PSNR=18.0475; SSIM=0.4911
 DEBUG:root:Experiment Name: fpn, Epoch: 1, Loss: G_loss=0.2507; PSNR=18.2461; SSIM=0.5259
+

@@ -8,6 +8,7 @@ from dedos.models.DeblurGANv2.models.fpn_mobilenet import FPNMobileNet
 from dedos.models.DeblurGANv2.models.fpn_inception import FPNInception
 from dedos.models.DeblurGANv2.models.fpn_inception_simple import FPNInceptionSimple
 from dedos.models.DeblurGANv2.models.fpn_densenet import FPNDense
+
 ###############################################################################
 # Functions
 ###############################################################################
@@ -278,6 +279,7 @@ def get_generator(model_config):
         model_g = FPNMobileNet(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']))
     elif generator_name == 'fpn_inception':
         model_g = FPNInception(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']),add_noise=model_config['add_noise'])
+
     elif generator_name == 'fpn_inception_simple':
         model_g = FPNInceptionSimple(norm_layer=get_norm_layer(norm_type=model_config['norm_layer']))
     elif generator_name == 'fpn_dense':

@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 import os
+
 import numpy as np
 # from tensorboardX import SummaryWriter
 
@@ -47,6 +48,7 @@ class MetricCounter:
         else:
             np.save(os.path.join(save_path, f"{identifier}/dedos_vals/dedos_metrics/metrics_train.npy"), self.metric_dict)
             np.save(os.path.join(save_path, f"{identifier}/dedos_vals/dedos_metrics/image_train{epoch}.npy"), self.images)
+
 
     # def write_to_tensorboard(self, epoch_num, validation=False):
     #    scalar_prefix = 'Validation' if validation else 'Train'
