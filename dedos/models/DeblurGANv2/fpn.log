@@ -1,2 +1,90 @@
 DEBUG:asyncio:Using selector: EpollSelector
 DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:root:Experiment Name: fpn, Epoch: 0, Loss: G_loss=0.3435; PSNR=19.4489; SSIM=0.6085
+DEBUG:root:Experiment Name: fpn, Epoch: 0, Loss: G_loss=0.2725; PSNR=22.4930; SSIM=0.6539
+DEBUG:root:Experiment Name: fpn, Epoch: 1, Loss: G_loss=0.2775; PSNR=22.8159; SSIM=0.6586
+DEBUG:root:Experiment Name: fpn, Epoch: 0, Loss: G_loss=0.1951; PSNR=20.6731; SSIM=0.6131
+DEBUG:root:Experiment Name: fpn, Epoch: 1, Loss: G_loss=0.1701; PSNR=22.1758; SSIM=0.6600
+DEBUG:root:Experiment Name: fpn, Epoch: 2, Loss: G_loss=0.1754; PSNR=22.3870; SSIM=0.6310
+DEBUG:root:Experiment Name: fpn, Epoch: 3, Loss: G_loss=0.1810; PSNR=22.3092; SSIM=0.6252
+DEBUG:root:Experiment Name: fpn, Epoch: 4, Loss: G_loss=0.1805; PSNR=22.5429; SSIM=0.6279
+DEBUG:root:Experiment Name: fpn, Epoch: 5, Loss: G_loss=0.1788; PSNR=22.4692; SSIM=0.6405
+DEBUG:root:Experiment Name: fpn, Epoch: 6, Loss: G_loss=0.1796; PSNR=22.8323; SSIM=0.6474
+DEBUG:root:Experiment Name: fpn, Epoch: 7, Loss: G_loss=0.1813; PSNR=22.5563; SSIM=0.6347
+DEBUG:root:Experiment Name: fpn, Epoch: 8, Loss: G_loss=0.1879; PSNR=22.4375; SSIM=0.6164
+DEBUG:root:Experiment Name: fpn, Epoch: 9, Loss: G_loss=0.1853; PSNR=22.3785; SSIM=0.6318
+DEBUG:root:Experiment Name: fpn, Epoch: 10, Loss: G_loss=0.1967; PSNR=22.2679; SSIM=0.6008
+DEBUG:root:Experiment Name: fpn, Epoch: 11, Loss: G_loss=0.1838; PSNR=22.9709; SSIM=0.6380
+DEBUG:root:Experiment Name: fpn, Epoch: 12, Loss: G_loss=0.2028; PSNR=22.2895; SSIM=0.5872
+DEBUG:root:Experiment Name: fpn, Epoch: 13, Loss: G_loss=0.2047; PSNR=22.0748; SSIM=0.5974
+DEBUG:root:Experiment Name: fpn, Epoch: 14, Loss: G_loss=0.1907; PSNR=22.4310; SSIM=0.6069
+DEBUG:root:Experiment Name: fpn, Epoch: 15, Loss: G_loss=0.1968; PSNR=22.5363; SSIM=0.5999
+DEBUG:root:Experiment Name: fpn, Epoch: 16, Loss: G_loss=0.1959; PSNR=22.5338; SSIM=0.6041
+DEBUG:root:Experiment Name: fpn, Epoch: 17, Loss: G_loss=0.2077; PSNR=21.9570; SSIM=0.5800
+DEBUG:root:Experiment Name: fpn, Epoch: 18, Loss: G_loss=0.2018; PSNR=22.4180; SSIM=0.5827
+DEBUG:root:Experiment Name: fpn, Epoch: 19, Loss: G_loss=0.2174; PSNR=21.9969; SSIM=0.5672
+DEBUG:root:Experiment Name: fpn, Epoch: 20, Loss: G_loss=0.2080; PSNR=23.1479; SSIM=0.6148
+DEBUG:root:Experiment Name: fpn, Epoch: 21, Loss: G_loss=0.2088; PSNR=22.3643; SSIM=0.6112
+DEBUG:root:Experiment Name: fpn, Epoch: 22, Loss: G_loss=0.2173; PSNR=22.1115; SSIM=0.5875
+DEBUG:root:Experiment Name: fpn, Epoch: 23, Loss: G_loss=0.2179; PSNR=21.8467; SSIM=0.5561
+DEBUG:root:Experiment Name: fpn, Epoch: 24, Loss: G_loss=0.2039; PSNR=22.1136; SSIM=0.5771
+DEBUG:root:Experiment Name: fpn, Epoch: 25, Loss: G_loss=0.2032; PSNR=22.9828; SSIM=0.6025
+DEBUG:root:Experiment Name: fpn, Epoch: 26, Loss: G_loss=0.2138; PSNR=22.3543; SSIM=0.6017
+DEBUG:root:Experiment Name: fpn, Epoch: 27, Loss: G_loss=0.2083; PSNR=21.7989; SSIM=0.5549
+DEBUG:root:Experiment Name: fpn, Epoch: 28, Loss: G_loss=0.1979; PSNR=22.5587; SSIM=0.6145
+DEBUG:root:Experiment Name: fpn, Epoch: 29, Loss: G_loss=0.2254; PSNR=22.0330; SSIM=0.5580
+DEBUG:root:Experiment Name: fpn, Epoch: 30, Loss: G_loss=0.2137; PSNR=22.3730; SSIM=0.5832
+DEBUG:root:Experiment Name: fpn, Epoch: 31, Loss: G_loss=0.1970; PSNR=21.9751; SSIM=0.5802
+DEBUG:root:Experiment Name: fpn, Epoch: 32, Loss: G_loss=0.1988; PSNR=21.7816; SSIM=0.5672
+DEBUG:root:Experiment Name: fpn, Epoch: 33, Loss: G_loss=0.2201; PSNR=21.6403; SSIM=0.5517
+DEBUG:root:Experiment Name: fpn, Epoch: 34, Loss: G_loss=0.2008; PSNR=22.2001; SSIM=0.5731
+DEBUG:root:Experiment Name: fpn, Epoch: 35, Loss: G_loss=0.1987; PSNR=22.4369; SSIM=0.5801
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:root:Experiment Name: fpn, Epoch: 0, Loss: G_loss=0.2113; PSNR=20.0164; SSIM=0.5248
+DEBUG:root:Experiment Name: fpn, Epoch: 0, Loss: G_loss=0.2581; PSNR=18.0475; SSIM=0.4911
+DEBUG:root:Experiment Name: fpn, Epoch: 1, Loss: G_loss=0.2507; PSNR=18.2461; SSIM=0.5259

@@ -32,7 +32,7 @@ class DeblurModel(nn.Module):
         real = self.tensor2im(target.data)
         psnr = PSNR(fake, real)
         ssim = SSIM(fake, real, multichannel=True)
-        lpips = self.metrics(torch.clip(output.data.cuda(),0,1), target.data.cuda())[2].item()
+        lpips = self.metrics(((output.data+1)/2).cuda(), ((target.data+1)/2).cuda())[2].item()
         vis_img = np.hstack((inp, fake, real))
         return psnr, ssim, lpips, vis_img
 

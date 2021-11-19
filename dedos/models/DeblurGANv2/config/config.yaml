@@ -68,3 +68,4 @@ scheduler:
   name: linear
   start_epoch: 50
   min_lr: 0.0000001
+save_result_path: '/home/clairezhangbin/cs236'

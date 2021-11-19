@@ -34,8 +34,8 @@ class Trainer:
         self.metric_counter = MetricCounter(config['experiment_desc'])
         self.warmup_epochs = config['warmup_num']
         self.identifier = date.today().isoformat()
-        os.makedirs(f"/home/clairezhangbin/cs236/{self.identifier}/dedos_vals/dedos_metrics/", exist_ok=True)
-        os.makedirs(f"/home/clairezhangbin/cs236/{self.identifier}/dedos_vals/dedos_weights/", exist_ok=True)
+        os.makedirs(os.path.join(config['save_result_path'], f"{self.identifier}/dedos_vals/dedos_metrics/"), exist_ok=True)
+        os.makedirs(os.path.join(config['save_result_path'], f"{self.identifier}/dedos_vals/dedos_weights/"), exist_ok=True)
 
     def train(self):
         self._init_params()
@@ -58,10 +58,10 @@ class Trainer:
             if self.metric_counter.update_best_model():
                 torch.save({
                     'model': self.netG.state_dict()
-                }, '/home/clairezhangbin/cs236/{}/dedos_vals/dedos_weights/best_{}.h5'.format(self.identifier,self.config['experiment_desc']))
+                }, os.path.join(self.config['save_result_path'],'{}/dedos_vals/dedos_weights/best_{}.h5'.format(self.identifier,self.config['experiment_desc'])))
             torch.save({
                 'model': self.netG.state_dict()
-            }, '/home/clairezhangbin/cs236/{}/dedos_vals/dedos_weights/last_{}.h5'.format(self.identifier,self.config['experiment_desc']))
+            }, os.path.join(self.config['save_result_path'],'{}/dedos_vals/dedos_weights/last_{}.h5'.format(self.identifier,self.config['experiment_desc'])))
             print(self.metric_counter.loss_message())
             logging.debug("Experiment Name: %s, Epoch: %d, Loss: %s" % (
                 self.config['experiment_desc'], epoch, self.metric_counter.loss_message()))
@@ -96,7 +96,7 @@ class Trainer:
             if i > epoch_size:
                 break
         tq.close()
-        self.metric_counter.write_to_dict(epoch, self.identifier, val=False)
+        self.metric_counter.write_to_dict(epoch, self.config['save_result_path'], self.identifier, val=False)
         # self.metric_counter.write_to_tensorboard(epoch)
 
     def _validate(self, epoch):
@@ -122,7 +122,7 @@ class Trainer:
             if i > epoch_size:
                 break
         tq.close()
-        self.metric_counter.write_to_dict(epoch, self.identifier, val=True)
+        self.metric_counter.write_to_dict(epoch, self.config['save_result_path'], self.identifier, val=True)
         # self.metric_counter.write_to_tensorboard(epoch, validation=True)
 
     def _update_d(self, outputs, targets):

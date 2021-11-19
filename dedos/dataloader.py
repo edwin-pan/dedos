@@ -75,6 +75,10 @@ class DeDOSDataset(Dataset):
         encoded = self.preprocess(encoded)
         sharp = self.preprocess(sharp)
         
+        # input in range [-1,1]
+        encoded = encoded.mul(2).add(-1)
+        sharp = sharp.mul(2).add(-1)
+        
         if self.augment:
         #TODO: Maybe?
             pass
