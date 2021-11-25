@@ -27,6 +27,7 @@ class Optimizer:
         l2_loss = torch.nn.MSELoss().cuda()
         
         for encoded, sharp in train_dl:
+            encoded, sharp = encoded.cuda(), sharp.cuda()
             # Initialize noise vectors in generator randomly (done automatically in init)
             # Initialize scaled weights for zernike randomly
             # Initialize an optimizer for just this sample
