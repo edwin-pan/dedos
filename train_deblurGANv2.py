@@ -44,7 +44,7 @@ class Trainer:
                 # self.netG.module.unfreeze()
             params_to_train = []
             for name, param in self.netG.named_parameters():
-                if "final" in name or "smooth" in name or "noise" in name:
+                if "final" in name or "smooth" in name or "noise_weight" in name:
                     params_to_train.append(param)
             self.optimizer_G = self._get_optim(params_to_train)
             self.scheduler_G = self._get_scheduler(self.optimizer_G)
