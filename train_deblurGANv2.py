@@ -1,7 +1,7 @@
 import logging
 import os
 from functools import partial
-from datetime import date
+from datetime import datetime
 
 import cv2
 import torch
@@ -33,7 +33,7 @@ class Trainer:
         self.adv_lambda = config['model']['adv_lambda']
         self.metric_counter = MetricCounter(config['experiment_desc'])
         self.warmup_epochs = config['warmup_num']
-        self.identifier = date.today().isoformat()
+        self.identifier = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
         os.makedirs(os.path.join(config['save_result_path'], f"{self.identifier}/dedos_vals/dedos_metrics/"), exist_ok=True)
         os.makedirs(os.path.join(config['save_result_path'], f"{self.identifier}/dedos_vals/dedos_weights/"), exist_ok=True)
 
