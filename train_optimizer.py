@@ -4,7 +4,7 @@ import yaml
 from torch.utils.data import DataLoader
 from joblib import cpu_count
 import torch.optim as optim
-from tqdm imort tqdm()
+from tqdm import tqdm
 
 
 
