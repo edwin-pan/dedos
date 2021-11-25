@@ -24,7 +24,7 @@ class Optimizer:
         
     def optimize(self, dl="train"):
         train_dl = self.dataloaders[dl]
-        l2_loss = torch.nn.MSELoss()
+        l2_loss = torch.nn.MSELoss().cuda()
         
         for encoded, sharp in train_dl:
             # Initialize noise vectors in generator randomly (done automatically in init)
