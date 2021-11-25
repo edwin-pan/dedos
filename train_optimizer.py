@@ -53,7 +53,8 @@ class Optimizer:
                 # Convolve generated with the kernel
                 convolved = torch.zeros_like(generated)
                 for channel in [0, 1, 2]:
-                    convolved[:, channel, :, :] = torch.nn.functional.conv2d(generated[:, channel, :, :], kernel, padding=255, stride=2)
+                    fourier = torch.fft.fft2(generated[:, channel, :, :].squeeze(0)) * torch.fft.fft2(kernel)
+                    convolved[:, channel, :, :] = torch.real(torch.fft.ifft2(fourier)).unsqueeze(0)
                 loss = l2_loss(encoded, convolved)
                 # Forward pass this image through the generator
                 # Compute the current filter from zernike
