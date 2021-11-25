@@ -202,7 +202,7 @@ def main(config_path='./dedos/models/DeblurGANv2/config/config.yaml'):
     # train, val, test dataloader
     batchsize = config.pop('batch_size')
     preprocess = transforms.Compose([transforms.ToTensor(), transforms.CenterCrop(256)])
-    dataset = DeDOSDataset('/home/clairezhangbin/cs236/dedos/deblurGAN', preprocess=preprocess)
+    dataset = DeDOSDataset('/scratch/groups/kpohl/dedos/deblurGAN', preprocess=preprocess)
     datasets = train_val_test_dataset(dataset)
     dataloaders = {x: DataLoader(datasets[x], batchsize, shuffle=True, num_workers=cpu_count()) for x in
                    ['train', 'val', 'test']}
