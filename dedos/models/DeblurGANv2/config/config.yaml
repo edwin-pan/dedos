@@ -44,7 +44,7 @@ model:
   g_name: fpn_inception
   add_noise: True
   pretrained: True
-  weight_path: /home/clairezhangbin/cs236/provided_weights/fpn_inception.h5
+  weight_path: /scratch/users/avento/dummy_scripts/fpn_inception.h5
 
   blocks: 9
   d_name: double_gan # may be no_gan, patch_gan, double_gan, multi_scale
@@ -72,5 +72,5 @@ scheduler:
   name: linear
   start_epoch: 50
   min_lr: 0.0000001
-save_result_path: '/home/clairezhangbin/cs236'
+save_result_path: '/scratch/users/avento/dedos_vals'
 

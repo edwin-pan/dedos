@@ -31,7 +31,7 @@ class ConvBlock(nn.Module):
 
 class FPNInception(nn.Module):
 
-    def __init__(self, norm_layer, add_noise=False, output_ch=3, num_filters=128, num_filters_fpn=256):
+    def __init__(self, norm_layer, add_noise=False, optimize_noise=False,output_ch=3, num_filters=128, num_filters_fpn=256):
 
         super().__init__()
 
@@ -45,7 +45,8 @@ class FPNInception(nn.Module):
         self.head2 = FPNHead(num_filters_fpn, num_filters, num_filters)
         self.head3 = FPNHead(num_filters_fpn, num_filters, num_filters)
         self.head4 = FPNHead(num_filters_fpn, num_filters, num_filters)
-        self.add_noise = add_noise;
+        self.add_noise = add_noise
+        self.optimize_noise = optimize_noise
 
 
         self.smooth = nn.Sequential(
@@ -64,6 +65,10 @@ class FPNInception(nn.Module):
         self.noise_weight2 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
         self.noise_weight1 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
 
+        self.noise_val4 = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
+        self.noise_val3 = torch.nn.Parameter(torch.randn((1, 1, 32, 32)),requires_grad=True)
+        self.noise_val2 = torch.nn.Parameter(torch.randn((1, 1, 16, 16)),requires_grad=True)
+        self.noise_val1 = torch.nn.Parameter(torch.randn((1, 1, 8, 8)),requires_grad=True)
 
         self.final = nn.Conv2d(num_filters // 2, output_ch, kernel_size=3, padding=1)
 
@@ -78,10 +83,23 @@ class FPNInception(nn.Module):
         map1 = nn.functional.upsample(self.head1(map1), scale_factor=1, mode="nearest")
 
         if self.add_noise:
-            map4 += torch.randn((map4.shape[0], 1, map4.shape[2],map4.shape[3])).cuda()* self.noise_weight4
-            map3 += torch.randn((map3.shape[0], 1, map3.shape[2],map3.shape[3])).cuda()* self.noise_weight3
-            map2 += torch.randn((map2.shape[0], 1, map2.shape[2],map2.shape[3])).cuda()* self.noise_weight2
-            map1 += torch.randn((map1.shape[0], 1, map1.shape[2],map1.shape[3])).cuda()* self.noise_weight1
+            if not self.optimize_noise:
+                temp4 = torch.randn((map4.shape[0], 1, map4.shape[2],map4.shape[3])).cuda()
+                temp3 = torch.randn((map3.shape[0], 1, map3.shape[2],map3.shape[3])).cuda()
+                temp2 = torch.randn((map2.shape[0], 1, map2.shape[2],map2.shape[3])).cuda()
+                temp1 = torch.randn((map1.shape[0], 1, map1.shape[2],map1.shape[3])).cuda()
+                map4 += temp4 * self.noise_weight4
+                map3 += temp3 * self.noise_weight3
+                map2 += temp2 * self.noise_weight2
+                map1 += temp1 * self.noise_weight1
+            else:
+                map4 += self.noise_val4 * self.noise_weight4
+                map3 += self.noise_val3 * self.noise_weight3
+                map2 += self.noise_val2 * self.noise_weight2
+                map1 += self.noise_val1 * self.noise_weight1
+                
+                
+                
 
         smoothed = self.smooth(torch.cat([map4, map3, map2, map1], dim=1))
         smoothed = nn.functional.upsample(smoothed, scale_factor=2, mode="nearest")

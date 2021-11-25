@@ -1,9 +1,11 @@
 import poppy
 import os
 import numpy as np
+import torch
 
-class ZernikeGenerator():
-    def __init__(self, num_terms, save_path='./', patch_size=1356, scale_factor=1e-6):
+class ZernikeGenerator(torch.nn.Module):
+    def __init__(self, num_terms, save_path='./', patch_size=256, scale_factor=1e-6):
+        super().__init__()
         self.num_terms = num_terms
         self.patch_size = patch_size
         self.scale_factor = scale_factor
@@ -18,8 +20,20 @@ class ZernikeGenerator():
         else:
             print(f"loading zernike volumn from {self.save_fname}")
             self.zernike_volume = np.load(self.save_fname)
+            
+        self.zernike_weights = torch.nn.Parameter(torch.randn(num_terms,1,1),requires_grad=True)
+        self.zernike_volume = torch.from_numpy(self.zernike_volume)
 
     def compute_zernike_volume(self, resolution, n_terms, scale_factor):
         zernike_volume = poppy.zernike.zernike_basis(nterms=n_terms, npix=resolution, outside=0.0)
         return zernike_volume * scale_factor
+    
+    def forward(self):
+        # x will be of shape (350,)
+        out = self.zernike_volume * self.zernike_weights
+        return torch.sum(out, 0)
+    
+if __name__ == "__main__":
+    zern_gen = ZernikeGenerator(350)
+    import pdb; pdb.set_trace()
 
