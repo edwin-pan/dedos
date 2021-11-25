@@ -30,10 +30,12 @@ class Optimizer:
             # Initialize noise vectors in generator randomly (done automatically in init)
             # Initialize scaled weights for zernike randomly
             # Initialize an optimizer for just this sample
+            
             self.zernike_gen = ZernikeGenerator(self.num_zernike_terms)
             params_to_update = []
             for name, param in self.netG.named_parameters():
                 if "noise_val" in name: 
+                    param.data = torch.randn_like(param.data.shape) # randomize for every sample
                     params_to_update.append(param)
             
             for name, param in self.zernike_gen.named_parameters():
