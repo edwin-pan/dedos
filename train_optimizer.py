@@ -48,10 +48,10 @@ class Optimizer:
                 self.zernike_gen.zero_grad()
                 
                 generated = self.netG(encoded)
-                kernel = self.zernike_gen()
+                kernel = self.zernike_gen().unsqueeze(0)
                 
                 # Convolve generated with the kernel
-                convolved = torch.nn.functional.conv2d(generated, kernel, padding='same')
+                convolved = torch.nn.functional.conv2d(generated, kernel, padding=255, stride=2)
                 loss = l2_loss(encoded, convolved)
                 # Forward pass this image through the generator
                 # Compute the current filter from zernike
