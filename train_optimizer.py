@@ -56,7 +56,7 @@ class Optimizer:
                 loss.backward()
                 optimizer.step()
 
-            # Ideally, we have a clean image, do stuff with is
+            predicted_sharp = self.netG(encoded)
         
         
     def _init_generator(self):
@@ -64,7 +64,7 @@ class Optimizer:
         self.netG.optimize_noise = True
         
         # TODO: Change weight path to be the OG weight path
-        weight_path = self.config['model']['weight_path']
+        weight_path = '/scratch/users/avento/dedos_vals/2021-11-24/dedos_vals/dedos_weights/best_fpn.h5'
         self.netG.load_state_dict(torch.load(weight_path)['model'],strict=False);
         for param in self.netG.parameters():
             param.requires_grad = True
