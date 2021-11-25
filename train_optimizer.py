@@ -4,7 +4,7 @@ import yaml
 from torch.utils.data import DataLoader
 from joblib import cpu_count
 import torch.optim as optim
-from scipy.signal import convolve2d
+from tqdm imort tqdm()
 
 
 
@@ -43,7 +43,7 @@ class Optimizer:
                     params_to_update.append(param)
                     
             optimizer = optim.Adam(params_to_update, lr=0.001)
-            for _ in range(100):
+            for _ in tqdm(range(100)):
                 self.netG.zero_grad()
                 self.zernike_gen.zero_grad()
                 
@@ -51,7 +51,7 @@ class Optimizer:
                 kernel = self.zernike_gen()
                 
                 # Convolve generated with the kernel
-                convolved = convolve2d(generated, kernel, mode='same', boundary='fill')
+                convolved = torch.nn.functional.conv2d(generated, kernel, padding='same')
                 loss = l2_loss(encoded, convolved)
                 # Forward pass this image through the generator
                 # Compute the current filter from zernike
