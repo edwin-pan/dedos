@@ -65,11 +65,10 @@ class FPNInception(nn.Module):
         self.noise_weight2 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
         self.noise_weight1 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
 
-        #self.noise_val4 = torch.nn.Parameter(torch.randn((map4.shape[0], 1, map4.shape[2],map4.shape[3])),requires_grad=True)
-        #self.noise_val3 = torch.nn.Parameter(torch.randn((map3.shape[0], 1, map3.shape[2],map3.shape[3])),requires_grad=True)
-        #self.noise_val2 = torch.nn.Parameter(torch.randn((map2.shape[0], 1, map2.shape[2],map2.shape[3])),requires_grad=True)
-        #self.noise_val1 = torch.nn.Parameter(torch.randn((map1.shape[0], 1, map1.shape[2],map1.shape[3])),requires_grad=True)
-
+        self.noise_val4 = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
+        self.noise_val3 = torch.nn.Parameter(torch.randn((1, 1, 32, 32)),requires_grad=True)
+        self.noise_val2 = torch.nn.Parameter(torch.randn((1, 1, 16, 16)),requires_grad=True)
+        self.noise_val1 = torch.nn.Parameter(torch.randn((1, 1, 8, 8)),requires_grad=True)
 
         self.final = nn.Conv2d(num_filters // 2, output_ch, kernel_size=3, padding=1)
 
