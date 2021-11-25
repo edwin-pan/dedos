@@ -14,7 +14,7 @@ from dedos.models.DeblurGANv2.models.networks import get_nets
 
 
 class Optimizer:
-    def __init__(self, dataloaders):
+    def __init__(self, config, dataloaders):
         self._init_generator()
         self.num_zernike_terms = 350
         self.dataloaders = dataloaders
@@ -86,7 +86,7 @@ def main(config_path='./dedos/models/DeblurGANv2/config/config.yaml'):
     dataloaders = {x: DataLoader(datasets[x], batchsize, shuffle=True, num_workers=cpu_count()) for x in
                    ['train', 'val', 'test']}
     
-    optimizer = Optimizer(dataloaders)
+    optimizer = Optimizer(config, dataloaders)
     optimizer.optimize()
     
     
