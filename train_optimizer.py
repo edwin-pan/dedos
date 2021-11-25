@@ -9,7 +9,7 @@ from scipy.signal import convolve2d
 
 
 from dedos.dataloader import DeDOSDataset, train_val_test_dataset
-from dedos.models.zernike import ZernikeGenerator
+from dedos.models.zernike.kernel_gen import ZernikeGenerator
 from dedos.models.DeblurGANv2.models.networks import get_nets
 
 
