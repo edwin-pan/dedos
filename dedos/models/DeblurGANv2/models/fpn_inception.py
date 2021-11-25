@@ -84,10 +84,10 @@ class FPNInception(nn.Module):
 
         if self.add_noise:
             if not self.optimize_noise:
-                self.noise_val4 = torch.randn((map4.shape[0], 1, map4.shape[2],map4.shape[3])).cuda()
-                self.noise_val3 = torch.randn((map3.shape[0], 1, map3.shape[2],map3.shape[3])).cuda()
-                self.noise_val2 = torch.randn((map2.shape[0], 1, map2.shape[2],map2.shape[3])).cuda()
-                self.noise_val1 = torch.randn((map1.shape[0], 1, map1.shape[2],map1.shape[3])).cuda()
+                self.noise_val4.data = torch.randn((map4.shape[0], 1, map4.shape[2],map4.shape[3])).cuda()
+                self.noise_val3.data = torch.randn((map3.shape[0], 1, map3.shape[2],map3.shape[3])).cuda()
+                self.noise_val2.data = torch.randn((map2.shape[0], 1, map2.shape[2],map2.shape[3])).cuda()
+                self.noise_val1.data = torch.randn((map1.shape[0], 1, map1.shape[2],map1.shape[3])).cuda()
                 
             map4 += self.noise_val4 * self.noise_weight4
             map3 += self.noise_val3 * self.noise_weight3
