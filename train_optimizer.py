@@ -15,6 +15,7 @@ from dedos.models.DeblurGANv2.models.networks import get_nets
 
 class Optimizer:
     def __init__(self, config, dataloaders):
+        self.config = config
         self._init_generator()
         self.num_zernike_terms = 350
         self.dataloaders = dataloaders
