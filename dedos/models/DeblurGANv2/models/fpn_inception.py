@@ -31,7 +31,8 @@ class ConvBlock(nn.Module):
 
 class FPNInception(nn.Module):
 
-    def __init__(self, norm_layer, output_ch=3, num_filters=128, num_filters_fpn=256):
+    def __init__(self, norm_layer, add_noise=False, output_ch=3, num_filters=128, num_filters_fpn=256):
+
         super().__init__()
 
         # Feature Pyramid Network (FPN) with four feature maps of resolutions
@@ -44,6 +45,8 @@ class FPNInception(nn.Module):
         self.head2 = FPNHead(num_filters_fpn, num_filters, num_filters)
         self.head3 = FPNHead(num_filters_fpn, num_filters, num_filters)
         self.head4 = FPNHead(num_filters_fpn, num_filters, num_filters)
+        self.add_noise = add_noise;
+
 
         self.smooth = nn.Sequential(
             nn.Conv2d(4 * num_filters, num_filters, kernel_size=3, padding=1),
@@ -56,6 +59,11 @@ class FPNInception(nn.Module):
             norm_layer(num_filters // 2),
             nn.ReLU(),
         )
+        self.noise_weight4 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
+        self.noise_weight3 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
+        self.noise_weight2 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
+        self.noise_weight1 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
+
 
         self.final = nn.Conv2d(num_filters // 2, output_ch, kernel_size=3, padding=1)
 
@@ -68,6 +76,12 @@ class FPNInception(nn.Module):
         map3 = nn.functional.upsample(self.head3(map3), scale_factor=4, mode="nearest")
         map2 = nn.functional.upsample(self.head2(map2), scale_factor=2, mode="nearest")
         map1 = nn.functional.upsample(self.head1(map1), scale_factor=1, mode="nearest")
+
+        if self.add_noise:
+            map4 += torch.randn((map4.shape[0], 1, map4.shape[2],map4.shape[3])).cuda()* self.noise_weight4
+            map3 += torch.randn((map3.shape[0], 1, map3.shape[2],map3.shape[3])).cuda()* self.noise_weight3
+            map2 += torch.randn((map2.shape[0], 1, map2.shape[2],map2.shape[3])).cuda()* self.noise_weight2
+            map1 += torch.randn((map1.shape[0], 1, map1.shape[2],map1.shape[3])).cuda()* self.noise_weight1
 
         smoothed = self.smooth(torch.cat([map4, map3, map2, map1], dim=1))
         smoothed = nn.functional.upsample(smoothed, scale_factor=2, mode="nearest")
@@ -163,4 +177,5 @@ class FPN(nn.Module):
         map3 = self.td1(lateral3 + nn.functional.upsample(map4, scale_factor=2, mode="nearest"))
         map2 = self.td2(F.pad(lateral2, pad, "reflect") + nn.functional.upsample(map3, scale_factor=2, mode="nearest"))
         map1 = self.td3(lateral1 + nn.functional.upsample(map2, scale_factor=2, mode="nearest"))
+
         return F.pad(lateral0, pad1, "reflect"), map1, map2, map3, map4

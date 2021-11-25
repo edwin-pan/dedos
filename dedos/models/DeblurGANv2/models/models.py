@@ -1,12 +1,11 @@
 import numpy as np
 import torch.nn as nn
 from skimage.metrics import structural_similarity as SSIM
-from util.metrics import PSNR
+from dedos.models.DeblurGANv2.util.metrics import PSNR
 import sys
 import os
-sys.path.append('/home/users/avento/dedos/dedos')
-print(os.getcwd())
-from metrics import Metrics
+from dedos.metrics import Metrics
+
 import torch
 
 
@@ -34,7 +33,8 @@ class DeblurModel(nn.Module):
         real = self.tensor2im(target.data)
         psnr = PSNR(fake, real)
         ssim = SSIM(fake, real, multichannel=True)
-        lpips = self.metrics(torch.clip(output.data.cuda(),0,1), target.data.cuda())[2].item()
+        lpips = self.metrics(((output.data+1)/2).cuda(), ((target.data+1)/2).cuda())[2].item()
+
         vis_img = np.hstack((inp, fake, real))
         return psnr, ssim, lpips, vis_img
 

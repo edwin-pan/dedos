@@ -10,11 +10,15 @@ from PIL import Image
 
 import matplotlib.pyplot as plt
 import os.path as osp
+import cv2
+
 import os
 import glob
 import sys
 
+
 sys.path.append('../') # importing in unit tests
+
 from dedos.metrics import Metrics
 
 def train_val_test_dataset(dataset, val_split=0.125, test_split=0.1):
@@ -70,12 +74,16 @@ class DeDOSDataset(Dataset):
         # Get encoded and sharp image
         encoded = self.e_images[index] # blurry now has path to chosen blurry image
         sharp = self.s_images[index] # sharp now has path to chosen sharp image
-        
+
         encoded = Image.open(encoded)
         sharp = Image.open(sharp)
         
         encoded = self.preprocess(encoded)
         sharp = self.preprocess(sharp)
+        
+        # input in range [-1,1]
+        encoded = encoded.mul(2).add(-1)
+        sharp = sharp.mul(2).add(-1)
         
         if self.augment:
         #TODO: Maybe?
