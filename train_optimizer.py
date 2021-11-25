@@ -35,7 +35,7 @@ class Optimizer:
             params_to_update = []
             for name, param in self.netG.named_parameters():
                 if "noise_val" in name: 
-                    param.data = torch.randn_like(param.data.shape) # randomize for every sample
+                    param.data = torch.randn_like(param.data) # randomize for every sample
                     params_to_update.append(param)
             
             for name, param in self.zernike_gen.named_parameters():
@@ -67,7 +67,7 @@ class Optimizer:
         self.netG.optimize_noise = True
         
         # TODO: Change weight path to be the OG weight path
-        weight_path = '/scratch/users/avento/dedos_vals/2021-11-24/dedos_vals/dedos_weights/best_fpn.h5'
+        weight_path = '/scratch/users/avento/dedos_vals/2021-11-25/dedos_vals/dedos_weights/best_fpn.h5'
         self.netG.load_state_dict(torch.load(weight_path)['model'],strict=False);
         for param in self.netG.parameters():
             param.requires_grad = True
