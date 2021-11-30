@@ -24,7 +24,6 @@ from dedos.dataloader import DeDOSDataset, train_val_test_dataset
 
 cv2.setNumThreads(0)
 
-
 class Trainer:
     def __init__(self, config, train: DataLoader, val: DataLoader):
         self.config = config
@@ -44,8 +43,8 @@ class Trainer:
                 # self.netG.module.unfreeze()
             params_to_train = []
             for name, param in self.netG.named_parameters():
-                if "final" in name or "smooth" in name or "noise_weight" in name:
-                    params_to_train.append(param)
+                #if "final" in name or "smooth" in name or "noise_weight" in name:
+                params_to_train.append(param)
             self.optimizer_G = self._get_optim(params_to_train)
             self.scheduler_G = self._get_scheduler(self.optimizer_G)
 
@@ -180,11 +179,13 @@ class Trainer:
         # load pretrained weights
         if self.config['model']['pretrained'] == True:
             weight_path = self.config['model']['weight_path']
+            #weight_path = '/scratch/users/avento/dedos_vals/2021-11-26_14:44:51/dedos_vals/dedos_weights/last_fpn.h5'
             self.netG.load_state_dict(torch.load(weight_path)['model'],strict=False);
             for param in self.netG.parameters():
                 param.requires_grad = True
                 
-            
+        #netD = torch.nn.DataParallel(netD)    
+        #self.netG = torch.nn.DataParallel(self.netG)
         self.netG.cuda()
         self.adv_trainer = self._get_adversarial_trainer(self.config['model']['d_name'], netD, criterionD)
         self.model = get_model(self.config['model'])

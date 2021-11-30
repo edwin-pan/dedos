@@ -60,15 +60,17 @@ class FPNInception(nn.Module):
             norm_layer(num_filters // 2),
             nn.ReLU(),
         )
-        self.noise_weight4 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
-        self.noise_weight3 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
-        self.noise_weight2 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
-        self.noise_weight1 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
+        self.noise_weight4 = torch.nn.Parameter(torch.randn(1,num_filters_fpn,1,1),requires_grad=True)
+        self.noise_weight3 = torch.nn.Parameter(torch.randn(1,num_filters_fpn,1,1),requires_grad=True)
+        self.noise_weight2 = torch.nn.Parameter(torch.randn(1,num_filters_fpn,1,1),requires_grad=True)
+        self.noise_weight1 = torch.nn.Parameter(torch.randn(1,num_filters_fpn,1,1),requires_grad=True)
+        self.noise_weight0 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
 
-        self.noise_val4 = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
-        self.noise_val3 = torch.nn.Parameter(torch.randn((1, 1, 32, 32)),requires_grad=True)
-        self.noise_val2 = torch.nn.Parameter(torch.randn((1, 1, 16, 16)),requires_grad=True)
-        self.noise_val1 = torch.nn.Parameter(torch.randn((1, 1, 8, 8)),requires_grad=True)
+        self.noise_val_real_4 = torch.nn.Parameter(torch.randn((1, 1, 8, 8)),requires_grad=True)
+        self.noise_val_real_3 = torch.nn.Parameter(torch.randn((1, 1, 16, 16)),requires_grad=True)
+        self.noise_val_real_2 = torch.nn.Parameter(torch.randn((1, 1, 32, 32)),requires_grad=True)
+        self.noise_val_real_1 = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
+        self.noise_val_real_0 = torch.nn.Parameter(torch.randn((1, 1, 128, 128)),requires_grad=True)
 
         self.final = nn.Conv2d(num_filters // 2, output_ch, kernel_size=3, padding=1)
 
@@ -77,30 +79,35 @@ class FPNInception(nn.Module):
 
     def forward(self, x):
         map0, map1, map2, map3, map4 = self.fpn(x)
-        map4 = nn.functional.upsample(self.head4(map4), scale_factor=8, mode="nearest")
-        map3 = nn.functional.upsample(self.head3(map3), scale_factor=4, mode="nearest")
-        map2 = nn.functional.upsample(self.head2(map2), scale_factor=2, mode="nearest")
-        map1 = nn.functional.upsample(self.head1(map1), scale_factor=1, mode="nearest")
-
+        #import pdb; pdb.set_trace()
+        #self.optimize_noise = True
         if self.add_noise:
             if not self.optimize_noise:
+                #import pdb; pdb.set_trace()
                 temp4 = torch.randn((map4.shape[0], 1, map4.shape[2],map4.shape[3])).cuda()
                 temp3 = torch.randn((map3.shape[0], 1, map3.shape[2],map3.shape[3])).cuda()
                 temp2 = torch.randn((map2.shape[0], 1, map2.shape[2],map2.shape[3])).cuda()
                 temp1 = torch.randn((map1.shape[0], 1, map1.shape[2],map1.shape[3])).cuda()
-                map4 += temp4 * self.noise_weight4
-                map3 += temp3 * self.noise_weight3
-                map2 += temp2 * self.noise_weight2
-                map1 += temp1 * self.noise_weight1
+                temp0 = torch.randn((map0.shape[0], 1, map0.shape[2],map0.shape[3])).cuda()
+                map4_a = map4 + temp4 * self.noise_weight4
+                map3_a = map3 + temp3 * self.noise_weight3
+                map2_a = map2 + temp2 * self.noise_weight2
+                map1_a = map1 + temp1 * self.noise_weight1
+                map0 = map0 + temp0 * self.noise_weight0
             else:
-                map4 += self.noise_val4 * self.noise_weight4
-                map3 += self.noise_val3 * self.noise_weight3
-                map2 += self.noise_val2 * self.noise_weight2
-                map1 += self.noise_val1 * self.noise_weight1
+                map4 += self.noise_val_real_4 * self.noise_weight4
+                map3 += self.noise_val_real_3 * self.noise_weight3
+                map2 += self.noise_val_real_2 * self.noise_weight2
+                map1 += self.noise_val_real_1 * self.noise_weight1
+                map0 += self.noise_val_real_0 * self.noise_weight0
+                #import pdb; pdb.set_trace()
+                #print("here")
                 
-                
-                
-
+        map4 = nn.functional.upsample(self.head4(map4_a), scale_factor=8, mode="nearest")        
+        map3 = nn.functional.upsample(self.head3(map3_a), scale_factor=4, mode="nearest")
+        map2 = nn.functional.upsample(self.head2(map2_a), scale_factor=2, mode="nearest")
+        map1 = nn.functional.upsample(self.head1(map1_a), scale_factor=1, mode="nearest")
+        
         smoothed = self.smooth(torch.cat([map4, map3, map2, map1], dim=1))
         smoothed = nn.functional.upsample(smoothed, scale_factor=2, mode="nearest")
         smoothed = self.smooth2(smoothed + map0)
