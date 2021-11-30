@@ -20,7 +20,7 @@ class ZernikeGenerator(torch.nn.Module):
         else:
             self.zernike_volume = np.load(self.save_fname)
             
-        self.zernike_weights = torch.nn.Parameter(10*torch.rand(num_terms,1,1),requires_grad=True)
+        self.zernike_weights = torch.nn.Parameter(10*torch.rand(num_terms,1,1),requires_grad=True) # TODO: possible deterministic initialization
         self.zernike_volume = torch.from_numpy(self.zernike_volume)
 
     def compute_zernike_volume(self, resolution, n_terms, scale_factor):
