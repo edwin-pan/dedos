@@ -9,3 +9,10 @@ matplotlib
 tensorboard==2.6.0
 tqdm
 poppy
+
+# From deblurGAN
+ipython
+PyYAML
+scikit-image
+pretrainedmodels
+torchsummary

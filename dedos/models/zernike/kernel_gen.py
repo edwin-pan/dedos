@@ -18,10 +18,9 @@ class ZernikeGenerator(torch.nn.Module):
                                                               scale_factor=self.scale_factor).astype(np.float32)
             np.save(self.save_fname, self.zernike_volume)
         else:
-            print(f"loading zernike volumn from {self.save_fname}")
             self.zernike_volume = np.load(self.save_fname)
             
-        self.zernike_weights = torch.nn.Parameter(torch.randn(num_terms,1,1),requires_grad=True)
+        self.zernike_weights = torch.nn.Parameter(10*torch.rand(num_terms,1,1),requires_grad=True)
         self.zernike_volume = torch.from_numpy(self.zernike_volume)
 
     def compute_zernike_volume(self, resolution, n_terms, scale_factor):

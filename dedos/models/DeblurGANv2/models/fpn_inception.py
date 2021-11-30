@@ -65,10 +65,10 @@ class FPNInception(nn.Module):
         self.noise_weight2 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
         self.noise_weight1 = torch.nn.Parameter(torch.randn(1,num_filters,1,1),requires_grad=True)
 
-        self.noise_val4 = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
-        self.noise_val3 = torch.nn.Parameter(torch.randn((1, 1, 32, 32)),requires_grad=True)
-        self.noise_val2 = torch.nn.Parameter(torch.randn((1, 1, 16, 16)),requires_grad=True)
-        self.noise_val1 = torch.nn.Parameter(torch.randn((1, 1, 8, 8)),requires_grad=True)
+        self.noise_val4_ = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
+        self.noise_val3_ = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
+        self.noise_val2_ = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
+        self.noise_val1_ = torch.nn.Parameter(torch.randn((1, 1, 64, 64)),requires_grad=True)
 
         self.final = nn.Conv2d(num_filters // 2, output_ch, kernel_size=3, padding=1)
 
@@ -82,6 +82,7 @@ class FPNInception(nn.Module):
         map2 = nn.functional.upsample(self.head2(map2), scale_factor=2, mode="nearest")
         map1 = nn.functional.upsample(self.head1(map1), scale_factor=1, mode="nearest")
 
+        self.optimize_noise=True # NOTE: Some strange bug... Hacky fix that forces else to execute
         if self.add_noise:
             if not self.optimize_noise:
                 temp4 = torch.randn((map4.shape[0], 1, map4.shape[2],map4.shape[3])).cuda()
@@ -93,10 +94,10 @@ class FPNInception(nn.Module):
                 map2 += temp2 * self.noise_weight2
                 map1 += temp1 * self.noise_weight1
             else:
-                map4 += self.noise_val4 * self.noise_weight4
-                map3 += self.noise_val3 * self.noise_weight3
-                map2 += self.noise_val2 * self.noise_weight2
-                map1 += self.noise_val1 * self.noise_weight1
+                map4 += self.noise_val4_ * self.noise_weight4
+                map3 += self.noise_val3_ * self.noise_weight3
+                map2 += self.noise_val2_ * self.noise_weight2
+                map1 += self.noise_val1_ * self.noise_weight1
                 
                 
                 
