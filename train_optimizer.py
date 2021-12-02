@@ -209,7 +209,7 @@ def main(args, config_path='./dedos/models/DeblurGANv2/config/config.yaml'):
         encoded, sharp = encoded.cuda(), sharp.cuda()
 
         # Run image
-        out_images, out_metrics = optimizer.optimize(encoded, sharp=sharp, num_steps=args.num_steps)
+        out_images, out_metrics = optimizer.optimize(encoded, sharp=sharp, num_steps=args.num_steps, verbose=True)
 
         # Unpack outputs
         encoded, convolved, pre_optim, predicted_sharp, sharp = out_images
