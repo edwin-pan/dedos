@@ -33,13 +33,52 @@ def parse_args():
 
     return parser.parse_args()
 
+class OutputImage(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.image_out = torch.nn.Parameter(torch.randn(1, 3, 256, 256),requires_grad=True)
 
-class OptmizerLosses(torch.nn.Module):
-    def __init__(self, sim_lambda=1, tv_lambda=1, device='cpu'):
+    def forward(self):
+        return self.image_out
+
+class Alg2Loss(torch.nn.Module):
+    def __init__(self, tau=0.5, delta=100, tv_lambda=0.001, device='cpu'):
         super().__init__()
         self.l2_loss = torch.nn.MSELoss().to(device)
         self.similarity = torch.nn.CosineSimilarity(dim=1, eps=1e-20)
-        self.sim_lambda = sim_lambda
+        self.tau = tau
+        self.delta = delta
+        self.tv_lambda = tv_lambda
+
+    def tv_loss(self, img):
+        """
+        Compute total variation loss. Adapted from CS231n
+        Inputs:
+        - img: PyTorch Variable of shape (1, 3, H, W) holding an input image.
+        - tv_weight: Scalar giving the weight w_t to use for the TV loss.
+        Returns:
+        - loss: PyTorch Variable holding a scalar giving the total variation loss
+        for img weighted by tv_weight.
+        """
+        w_variance = torch.sum(torch.pow(img[:,:,:,:-1] - img[:,:,:,1:], 2))
+        h_variance = torch.sum(torch.pow(img[:,:,:-1,:] - img[:,:,1:,:], 2))
+        loss =  h_variance + w_variance
+        return loss
+
+    def forward(self, x_encoded, y_convolved, gen, i, i_convolved):
+        tv_term = self.tv_loss(i)
+        loss =  self.l2_loss(x_encoded, i_convolved) + \
+                self.tau*self.l2_loss(i, gen) + \
+                self.delta*self.l2_loss(y_convolved, x_encoded) + \
+                self.tv_lambda * tv_term
+        return loss
+
+class OptmizerLosses(torch.nn.Module):
+    def __init__(self, cos_lambda=1, tv_lambda=1, device='cpu'):
+        super().__init__()
+        self.l2_loss = torch.nn.MSELoss().to(device)
+        self.similarity = torch.nn.CosineSimilarity(dim=1, eps=1e-20)
+        self.cos_lambda = cos_lambda
         self.tv_lambda = tv_lambda
 
     def tv_loss(self, img):
@@ -58,38 +97,43 @@ class OptmizerLosses(torch.nn.Module):
         return loss
 
     def forward(self, x, y, gen):
-            cosine_term = (1 - self.similarity(x, y)).mean()
-            tv_term = self.tv_loss(gen)
-            return self.l2_loss(x, y) + self.sim_lambda * cosine_term + self.tv_lambda * tv_term
+        cosine_term = (1 - self.similarity(x, y)).mean()
+        tv_term = self.tv_loss(gen)
+        return self.l2_loss(x, y) + self.cos_lambda * cosine_term + self.tv_lambda * tv_term
             
 
 class Optimizer:
-    def __init__(self, config, dataloaders):
+    def __init__(self, config, use_alg2=False, cos_lambda=1, tv_lambda=0.01):
         self.config = config
         self._init_generator()
         self.num_zernike_terms = 350
-        self.dataloaders = dataloaders
         self.zernike_gen = ZernikeGenerator(self.num_zernike_terms)
-        self.loss_fn = OptmizerLosses(tv_lambda=0.01, device='cuda')
+        self.use_alg2 = use_alg2
+        if self.use_alg2:
+            self.image_out = OutputImage().cuda()
+            self.loss_fn = Alg2Loss(tv_lambda=tv_lambda, device='cuda')
+        else:
+            self.loss_fn = OptmizerLosses(cos_lambda=cos_lambda, tv_lambda=tv_lambda, device='cuda')
+
 
     def _init_generator(self):
         self.netG, _ = get_nets(self.config['model'])
         self.netG.optimize_noise = True
         
         # TODO: Change weight path to be the OG weight path
-        weight_path = './last_fpn.h5'
+        weight_path = './last_fpn_new_noise.h5'
         self.netG.load_state_dict(torch.load(weight_path)['model'],strict=False)
         for param in self.netG.parameters():
             param.requires_grad = True
-        
         self.netG.cuda()
-
         
-    def tensor2im(self, image_tensor, imtype=np.uint8):
+    def tensor2im(self, image_tensor, imtype=np.uint8, rescale=True):
             image_numpy = image_tensor[0].cpu().float().numpy()
-            image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
+            image_numpy = np.transpose(image_numpy, (1, 2, 0))
+            if rescale: 
+                image_numpy = (image_numpy + 1) / 2.0 
+            image_numpy *= 255.0
             return image_numpy.astype(imtype)
-
 
     def optimize(self, encoded, sharp=None, num_steps=1000, verbose=False):
         """Post-process optimization on 1 image.
@@ -118,11 +162,19 @@ class Optimizer:
             if "noise_val" in name: 
                 param.data = torch.randn_like(param.data) # randomize for every sample
                 params_to_update.append(param)
-        
+
         for name, param in self.zernike_gen.named_parameters():
             if "zernike_weights" in name:
                 params_to_update.append(param)
-        optimizer = optim.Adam(params_to_update, lr=0.1)
+
+        if self.use_alg2:
+            for name, param in self.image_out.named_parameters():
+                if "image_out" in name: 
+                    param.data = torch.randn_like(param.data) # randomize for every sample
+                    params_to_update.append(param)
+
+
+        optimizer = optim.Adam(params_to_update, lr=0.01)
 
         # Record metrics (baseline encoded vs sharp)
         psnr1 = PSNR(self.tensor2im(encoded), self.tensor2im(sharp))
@@ -150,15 +202,30 @@ class Optimizer:
             # Convolve generated with the kernel
             convolved = self.zernike_gen.apply_zernike(generated, device='cuda')
 
-            # Determine loss, backpropogate
-            loss = self.loss_fn((encoded+1)/2, convolved, (generated+1)/2)
+            # Convolve output image with kernel
+            if self.use_alg2:
+                curr_image_out = self.image_out.forward()
+                alg2_term = self.zernike_gen.apply_zernike(curr_image_out, device='cuda')
+                loss = self.loss_fn((encoded+1)/2, convolved, (generated+1)/2, (curr_image_out+1)/2, alg2_term)
+            else:
+                # Determine loss, backpropogate
+                loss = self.loss_fn((encoded+1)/2, convolved, (generated+1)/2)
             loss.backward()
             optimizer.step()
 
-            # More record keeping
-            progress.set_postfix(loss='%.4f' % loss.item())
+            if self.use_alg2:
+                generated = curr_image_out
 
-        predicted_sharp = self.netG(encoded)
+            # plt.imsave(f'./tmp/{i:03d}.png', self.tensor2im(generated.data))
+            # More record keeping
+            psnr_rec = PSNR(self.tensor2im(generated.data), self.tensor2im(sharp))
+            ssim_rec = SSIM(self.tensor2im(generated.data), self.tensor2im(sharp), multichannel=True)
+            progress.set_postfix(loss='%.4f' % loss.item(), psnr='%.4f' % psnr_rec, ssim='%.4f' % ssim_rec)
+
+        if self.use_alg2:
+            predicted_sharp = self.image_out.forward()
+        else:
+            predicted_sharp = self.netG(encoded)
         psnr3 = PSNR(self.tensor2im(predicted_sharp.data), self.tensor2im(sharp))
         ssim3 = SSIM(self.tensor2im(predicted_sharp.data), self.tensor2im(sharp), multichannel=True)
         if verbose:
@@ -167,7 +234,7 @@ class Optimizer:
 
         if sharp is not None:
             images = [self.tensor2im(encoded), 
-                      self.tensor2im(convolved.data), 
+                      self.tensor2im(convolved.data, rescale=False), 
                       self.tensor2im(pre_optim.data), 
                       self.tensor2im(predicted_sharp.data), 
                       self.tensor2im(sharp)]
@@ -175,10 +242,6 @@ class Optimizer:
             return images, metrics
         else:
             return self.tensor2im(predicted_sharp.data)
-
-
-def add2avg(average, size, value):
-    return (size * average + value) / (size + 1)
 
 
 def main(args, config_path='./dedos/models/DeblurGANv2/config/config.yaml'):
@@ -193,10 +256,11 @@ def main(args, config_path='./dedos/models/DeblurGANv2/config/config.yaml'):
     dataset = DeDOSDataset(os.path.join(args.root, '../../data/deblurGAN'), preprocess=preprocess)
 
     datasets = train_val_test_dataset(dataset)
-    dataloaders = {x: DataLoader(datasets[x], batchsize, shuffle=True, num_workers=cpu_count()) for x in
+    dataloaders = {x: DataLoader(datasets[x], batchsize, shuffle=False, num_workers=cpu_count()) for x in
                    ['train', 'val', 'test']}
     
-    optimizer = Optimizer(config, dataloaders)
+    optimizer = Optimizer(config, cos_lambda=5, tv_lambda=0.001)
+    # optimizer = Optimizer(config, cos_lambda=0, tv_lambda=0)
 
     split='test'
     dl = dataloaders[split]
@@ -272,7 +336,8 @@ def main(args, config_path='./dedos/models/DeblurGANv2/config/config.yaml'):
     # Print results
     print(f"PSNRS ({args.num_samples}-avg): {psnr_record_arr.mean(axis=0)}")
     print(f"SSIMS ({args.num_samples}-avg): {ssim_record_arr.mean(axis=0)}")
-    
+
+
 if __name__ == "__main__":
     args = parse_args()
     main(args)
